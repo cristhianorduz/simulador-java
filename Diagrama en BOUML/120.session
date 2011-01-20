@@ -1,0 +1,12 @@
+window_sizes 1366 718 320 960 512 82
+diagrams
+  active  classdiagram_ref 128123 // Diagrama de Clase
+    1040 562 100 4 0 0
+end
+show_stereotypes
+open
+  class_ref 128251 // PuntoInterno
+  class_ref 128120 // Punto
+  class_ref 128632 // Avenida
+end
+end

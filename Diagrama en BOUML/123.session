@@ -1,0 +1,13 @@
+window_sizes 1680 964 393 1182 700 82
+diagrams
+  active  classdiagram_ref 128123 // Diagrama de Clase
+    1281 808 100 4 0 0
+end
+show_stereotypes
+selected class_ref 128123 // Red
+open
+  class_ref 128123 // Red
+  class_ref 128251 // PuntoExterior
+  class_ref 128379 // Avenida
+end
+end
