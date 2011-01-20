@@ -1,0 +1,417 @@
+format 75
+"TP DIED" // TP DIED
+  revision 2
+  modified_by 120 "User"
+  // class settings
+  //class diagram settings
+  draw_all_relations default hide_attributes default hide_operations default hide_getset_operations default show_members_full_definition default show_members_visibility default show_members_stereotype default show_members_context default show_members_multiplicity default show_members_initialization default show_attribute_modifiers default member_max_width 0 show_parameter_dir default show_parameter_name default package_name_in_tab no class_drawing_mode default drawing_language default show_context_mode no auto_label_position default show_relation_modifiers default show_relation_visibility default show_infonote default shadow yes show_stereotype_properties default
+  //use case diagram settings
+  package_name_in_tab default show_context default auto_label_position default draw_all_relations default class_drawing_mode default shadow default show_stereotype_properties default
+  //sequence diagram settings
+  show_full_operations_definition default write_horizontally default class_drawing_mode default drawing_language default draw_all_relations default shadow default show_stereotype_properties default show_class_context_mode default show_msg_context_mode default
+  //collaboration diagram settings
+  show_full_operations_definition default show_hierarchical_rank default write_horizontally default drawing_language default package_name_in_tab default show_context default show_msg_context default draw_all_relations default shadow default show_stereotype_properties default
+  //object diagram settings
+   write_horizontally default package_name_in_tab default show_context default auto_label_position default draw_all_relations default shadow default show_stereotype_properties default
+  //component diagram settings
+  package_name_in_tab default show_context default auto_label_position default draw_all_relations default shadow default
+  draw_component_as_icon default show_component_req_prov default show_component_rea default show_stereotype_properties default
+  //deployment diagram settings
+  package_name_in_tab default show_context default write_horizontally default auto_label_position default draw_all_relations default shadow default
+  draw_component_as_icon default show_component_req_prov default show_component_rea default show_stereotype_properties default
+  //state diagram settings
+  package_name_in_tab default show_context default auto_label_position default write_trans_label_horizontally default show_trans_definition default draw_all_relations default shadow default
+  show_activities default region_horizontally default drawing_language default show_stereotype_properties default
+  //activity diagram settings
+  package_name_in_tab default show_context default show_opaque_action_definition default auto_label_position default write_flow_label_horizontally default draw_all_relations default shadow default
+  show_infonote default drawing_language default show_stereotype_properties default
+  
+  classview 128123 "Clases"
+    //class diagram settings
+    draw_all_relations default hide_attributes default hide_operations default hide_getset_operations default show_members_full_definition default show_members_visibility default show_members_stereotype default show_members_context default show_members_multiplicity default show_members_initialization default show_attribute_modifiers default member_max_width 0 show_parameter_dir default show_parameter_name default package_name_in_tab default class_drawing_mode default drawing_language default show_context_mode default auto_label_position default show_relation_modifiers default show_relation_visibility default show_infonote default shadow default show_stereotype_properties default
+    //collaboration diagram settings
+    show_full_operations_definition default show_hierarchical_rank default write_horizontally default drawing_language default package_name_in_tab default show_context default show_msg_context default draw_all_relations default shadow default show_stereotype_properties default
+    //object diagram settings
+     write_horizontally default package_name_in_tab default show_context default auto_label_position default draw_all_relations default shadow default show_stereotype_properties default
+    //sequence diagram settings
+    show_full_operations_definition default write_horizontally default class_drawing_mode default drawing_language default draw_all_relations default shadow default show_stereotype_properties default show_class_context_mode default show_msg_context_mode default
+    //state diagram settings
+    package_name_in_tab default show_context default auto_label_position default write_trans_label_horizontally default show_trans_definition default draw_all_relations default shadow default
+    show_activities default region_horizontally default drawing_language default show_stereotype_properties default
+    //class settings
+    //activity diagram settings
+    package_name_in_tab default show_context default show_opaque_action_definition default auto_label_position default write_flow_label_horizontally default draw_all_relations default shadow default
+    show_infonote default drawing_language default show_stereotype_properties default
+    classdiagram 128123 "Diagrama de Clase"
+      draw_all_relations no hide_attributes default hide_operations default hide_getset_operations default show_members_full_definition default show_members_visibility default show_members_stereotype default show_members_context default show_members_multiplicity default show_members_initialization default show_attribute_modifiers default member_max_width 0 show_parameter_dir default show_parameter_name default package_name_in_tab no class_drawing_mode default drawing_language default show_context_mode default auto_label_position default show_relation_modifiers default show_relation_visibility default show_infonote default shadow default show_stereotype_properties default
+      size A4
+    end
+
+    class 128123 "Red"
+      visibility package 
+      cpp_decl ""
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+      classrelation 128251 // <association>
+	relation_ref 128123 // <association>
+      end
+
+      attribute 128123 "avenidas"
+	private explicit_type "Avenida"
+	multiplicity "*"
+	cpp_decl ""
+	java_decl ""
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+      end
+
+      classrelation 129016 // <composition>
+	relation_ref 128632 // <composition>
+      end
+
+      classrelation 129400 // <composition>
+	relation 128888 *---
+	  a role_name "" private
+	    classrelation_ref 129400 // <composition>
+	  b role_name "" private
+	    classrelation_ref 129528 // <composition>
+      end
+
+      classrelation 129912 // <composition>
+	relation 129272 *---
+	  a role_name "" private
+	    classrelation_ref 129912 // <composition>
+	  b role_name "" private
+	    classrelation_ref 130040 // <composition>
+      end
+    end
+
+    class 128251 "PuntoInterno"
+      visibility package 
+      cpp_decl ""
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+      classrelation 128888 // <composition>
+	relation 128632 *---
+	  a role_name "" private
+	    classrelation_ref 128888 // <composition>
+	  b role_name "" private
+	    classrelation_ref 129016 // <composition>
+      end
+
+      classrelation 129784 // <generalisation>
+	relation 129144 ---|>
+	  a public
+	    classrelation_ref 129784 // <generalisation>
+	  b parent class_ref 128120 // Punto
+      end
+
+      attribute 128504 "costo"
+	private explicit_type "double"
+	cpp_decl ""
+	java_decl ""
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+      end
+
+      operation 128632 "PuntoInterno"
+	public explicit_return_type ""
+	nparams 4
+	  param in name "x" explicit_type "double"
+	  param in name "y" explicit_type "double"
+	  param in name "nombre" explicit_type "String"
+	  param in name "costo" explicit_type "double"
+	
+	
+	
+	
+	
+      end
+
+      operation 128760 "getCosto"
+	public explicit_return_type "double"
+	nparams 0
+	
+	
+	
+	
+	
+      end
+    end
+
+    class 128507 "Aplicacion"
+      visibility package 
+      cpp_decl ""
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+      classrelation 128123 // <association>
+	relation 128123 ----
+	  a role_name "" private
+	    classrelation_ref 128123 // <association>
+	  b role_name "" private
+	    classrelation_ref 128251 // <association>
+      end
+
+      classrelation 128120 // <composition>
+	relation 128120 *---
+	  a role_name "" private
+	    classrelation_ref 128120 // <composition>
+	  b role_name "" private
+	    classrelation_ref 128248 // <composition>
+      end
+
+      classrelation 128632 // <dependency>
+	relation 128376 -_->
+	  a default
+	    classrelation_ref 128632 // <dependency>
+	  b parent class_ref 128376 // VentanaNuevaAvenida
+      end
+
+      classrelation 128760 // <dependency>
+	relation 128504 -_->
+	  a default
+	    classrelation_ref 128760 // <dependency>
+	  b parent class_ref 128504 // VentanaNuevoPunto
+      end
+    end
+
+    class 128120 "Punto"
+      visibility package 
+      cpp_decl ""
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+      classrelation 129528 // <composition>
+	relation_ref 128888 // <composition>
+      end
+
+      attribute 128120 "nombre"
+	private explicit_type "String"
+	cpp_decl ""
+	java_decl ""
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+      end
+
+      attribute 128248 "posX"
+	private explicit_type "double"
+	cpp_decl ""
+	java_decl ""
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+      end
+
+      attribute 128376 "posY"
+	private explicit_type "double"
+	cpp_decl ""
+	java_decl ""
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+      end
+
+      operation 128120 "getX"
+	public explicit_return_type "double"
+	nparams 0
+	
+	
+	
+	
+	
+      end
+
+      operation 128248 "getY"
+	public explicit_return_type "double"
+	nparams 0
+	
+	
+	
+	
+	
+      end
+
+      operation 128376 "getNombre"
+	public explicit_return_type "String"
+	nparams 0
+	
+	
+	
+	
+	
+      end
+
+      operation 128504 "Punto"
+	public explicit_return_type ""
+	nparams 3
+	  param in name "nombre" explicit_type "String"
+	  param in name "x" explicit_type "double"
+	  param in name "y" explicit_type "double"
+	
+	
+	
+	
+	
+      end
+
+      classrelation 130296 // <association>
+	relation_ref 129400 // <association>
+      end
+    end
+
+    class 128248 "PanelDibujo"
+      visibility package 
+      cpp_decl ""
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+      classrelation 128248 // <composition>
+	relation_ref 128120 // <composition>
+      end
+    end
+
+    class 128376 "VentanaNuevaAvenida"
+      visibility package 
+      cpp_decl ""
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+    end
+
+    class 128504 "VentanaNuevoPunto"
+      visibility package 
+      cpp_decl ""
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+    end
+
+    class 128632 "Avenida"
+      visibility package 
+      cpp_decl ""
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+      attribute 128632 "origen"
+	private explicit_type "Punto"
+	cpp_decl ""
+	java_decl ""
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+      end
+
+      attribute 128760 "destino"
+	private explicit_type "Punto"
+	cpp_decl ""
+	java_decl ""
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+      end
+
+      attribute 128888 "traficoMax"
+	private explicit_type "long"
+	cpp_decl ""
+	java_decl ""
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+      end
+
+      attribute 129016 "distancia"
+	private explicit_type "double"
+	cpp_decl ""
+	java_decl ""
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+      end
+
+      classrelation 130040 // <composition>
+	relation_ref 129272 // <composition>
+      end
+
+      operation 128888 "Avenida"
+	public explicit_return_type ""
+	nparams 4
+	  param in name "origen" explicit_type "Punto"
+	  param in name "destino" explicit_type "Punto"
+	  param in name "traficoMax" explicit_type "long"
+	  param in name "distancia" explicit_type "double"
+	
+	
+	
+	
+	
+      end
+
+      operation 129016 "getOrigen"
+	public explicit_return_type "Punto"
+	nparams 0
+	
+	
+	
+	
+	
+      end
+
+      operation 129144 "getDestino"
+	public explicit_return_type "Punto"
+	nparams 0
+	
+	
+	
+	
+	
+      end
+
+      classrelation 130168 // <association>
+	relation 129400 ----
+	  a role_name "" private
+	    classrelation_ref 130168 // <association>
+	  b role_name "" private
+	    classrelation_ref 130296 // <association>
+      end
+
+      attribute 129144 "habilitada"
+	private explicit_type "boolean"
+	cpp_decl ""
+	java_decl ""
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+      end
+    end
+  end
+end
