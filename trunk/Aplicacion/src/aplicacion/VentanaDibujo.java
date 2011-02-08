@@ -71,9 +71,6 @@ public class VentanaDibujo extends JPanel {
         
         super.paintComponent(g2);
         
-        Ellipse2D acceso = new Ellipse2D.Float(210, 10, 20, 20);
-        Ellipse2D salida = new Ellipse2D.Float(210, 390, 20, 20);
-        
         // Dibuja todas las avenidas
         if(avenidas!=null) {
         	
@@ -137,23 +134,7 @@ public class VentanaDibujo extends JPanel {
         	}
         }
         
-        // Dibuja el punto de acceso
-        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        g2.setStroke(new BasicStroke(2));
-        g2.setPaint(Color.blue);
-        g2.fill(acceso);
-        g2.setPaint(Color.black);
-
-        g2.draw(acceso);
-        
-        // Dibuja el punto de salida
-        g2.setPaint(Color.red);
-        g2.fill(salida);
-        g2.setPaint(Color.black);
-
-        g2.draw(salida);
-        
-        // Dibuja todos los puntos internos	
+        // Dibuja todos los puntos
         if(puntos!=null) {
         	
             Ellipse2D punto;
@@ -164,7 +145,17 @@ public class VentanaDibujo extends JPanel {
     			
     			g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
     	        g2.setStroke(new BasicStroke(2));
-    	        g2.setPaint(Color.yellow);
+    	        
+    	        if(puntos[i].getX()==180.0 && puntos[i].getY()==20.0) {
+    	        	g2.setPaint(Color.blue);
+    	        }
+    	        else if(puntos[i].getX()==180.0 && puntos[i].getY()==400.0) {
+    	        	g2.setPaint(Color.red);
+    	        }
+    	        else {
+    	        	g2.setPaint(Color.yellow);
+    	        }
+    	       
     	        g2.fill(punto);
     	        g2.setPaint(Color.black);
     	        

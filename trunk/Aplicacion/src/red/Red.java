@@ -14,26 +14,17 @@ import java.lang.Math;
  */
 public class Red implements Serializable {
 	
-	private int numPuntos;	// número de puntos de la red
-	private int maxPuntos;	// número máximo de puntos de la red
 	private Punto acceso;	// punto de acceso de la red
 	private Punto salida;	// punto de salida de la red
 	private Vector<PuntoInterno> puntosInternos;	// vector de puntos internos de la red
 	private Vector<Avenida> avenidas;	// vector de avenidas de la red
 	private final int RADIO = 10;	// radio de las circunferencias
+	private static final double MAX = 9999;
 	
 	/**
 	 * Constructor de clase.
 	 */
 	public Red(double xAcceso, double yAcceso, double xSalida, double ySalida) {
-		
-		/* Inicialmente hay dos puntos en la red, acceso y salida respectivamente */
-		numPuntos = 2;
-		
-		/* Establece un máximo inicial de 20 puntos, que se extenderá
-		 * en caso de que el número de intersecciones entre avenidas supere
-		 * dicho tope */
-		maxPuntos = 10;
 		
 		/* Crea los puntos externos de acceso y salida de la ciudad */
 		acceso = new Punto("Acceso", xAcceso, yAcceso);
@@ -70,8 +61,7 @@ public class Red implements Serializable {
 	} // fin del método agregarAvenida
 	
 	/**
-	 * @param x
-	 * @param y
+	 * @param p
 	 * 
 	 * Elimina el nodo centrado en el punto "p"
 	 */
@@ -106,11 +96,12 @@ public class Red implements Serializable {
 			
 			a = avenidas.get(i);
 			if(a.getOrigen().equals(p) || a.getDestino().equals(p)) {
-				
+
 				eliminarAvenida(a);
 			}
-			
-			i++;
+			else {
+				i++;
+			}
 		}
 		
 	} // fin del método eliminarAvenidasContienen
@@ -389,8 +380,8 @@ public class Red implements Serializable {
 	
 	
 	/**
-	 * @param x
-	 * @param y
+	 * @param origen
+	 * @param destino
 	 * @param x
 	 * @param y
 	 * @return boolean
@@ -435,7 +426,7 @@ public class Red implements Serializable {
 			// Valor calculado en Y para la recta
 			double yCalculado = a * x + b;
 			
-			if(y>=(yCalculado-4) && y<=(yCalculado+4)) {
+			if(y>=(yCalculado-10) && y<=(yCalculado+10)) {
 				return true;
 			}
 			else {
@@ -516,7 +507,7 @@ public class Red implements Serializable {
 			// Si la pendiente de la recta es infinita
 			if(xDestino-xOrigen == 0) {
 
-				double ordenada, xInt, yInt, dist;			
+				double dist;			
 					
 				// la diferencia entre coordenadas
 				dist = xOrigen - x;
@@ -587,7 +578,7 @@ public class Red implements Serializable {
 			
 			int i = 0;
 			boolean encontrado = false;
-			double ordenada, xInt, yInt, dist;
+			double dist;
 			Punto p;
 			
 			while(i<puntosInternos.size() && !encontrado) {
@@ -705,9 +696,15 @@ public class Red implements Serializable {
 		
 		for(int i=0; i<puntos.length-1; i++) {
 			
-			a = getAvenida(puntos[i], puntos[i+1]);
-			
-			avenidas.add(a);
+			for(int j=0; j<puntos.length; j++) {
+				
+				a = getAvenida2(puntos[i], puntos[j]);
+				
+				if(a!=null) {
+					
+					avenidas.add(a);
+				}
+			}
 		}
 		
 		// Pasa las avenidas a un arreglo
@@ -716,6 +713,7 @@ public class Red implements Serializable {
 		while(i<avenidas.size()) {
 			
 			av[i] = avenidas.get(i);
+			i++;
 		}
 		
 		return av;
@@ -723,22 +721,120 @@ public class Red implements Serializable {
 	} // fin del método obtenerSecuenciaAvenidas
 	
 	/***************************************************************************
-	 *********************** Métodos a implementar *****************************
+	 ********************* Métodos de funcionalidades **************************
 	 ***************************************************************************/
 	
 	/**
-	 * @param origen
-	 * @param destino
-	 * @return Punto[]
-	 * 
-	 * Obtiene el camino más corto entre el par de puntos dados.
-	 * Devuelve un arreglo con la lista de puntos que conforman
-	 * el camino mas corto, si es que existe uno, incluyendo los puntos
-	 * de los extremos. Si los nodos no son alzcanzables devuelve "null".
-	 */
+	* 
+	* @return
+	* 
+	* Agrega el punto de Acceso y el punto de Salida al vector 
+	* de Puntos Internos para facilitar los cálculos
+	*/
+	public Vector<PuntoInterno> puntosInternosAux(){
+		int n = puntosInternos.size();
+		Vector<PuntoInterno> puntosAux = new Vector<PuntoInterno>();
+		puntosAux.add(new PuntoInterno(0, 0, "Acceso", 0));
+		for(int i=0; i<n; i++){
+			puntosAux.add(puntosInternos.get(i));
+		}
+		puntosAux.add(new PuntoInterno(0,0,"Salida",0));
+		return puntosAux;
+	}
+	/**
+	* @param o
+	* @param p
+	* @return Avenida
+	* 
+	* Dados dos puntos origen y destino, obtiene la avenida entre ellos.
+	*/
+	public Avenida getAvenida2(Punto o, Punto p) {
+		
+		int i = 0;
+		boolean encontrado = false;
+		Avenida a = null;
+		
+		while(i<avenidas.size() && !encontrado) {
+			
+			a = avenidas.get(i);
+			if(a.getOrigen().getNombre().equals(o.getNombre())&& a.getDestino().getNombre().equals(p.getNombre())) {
+				
+				encontrado = true;
+			}
+			else {
+				i++;
+			}
+		}
+		
+		if(encontrado) {
+			
+			return a;
+		}
+		else {
+			return null;
+		}
+	} // fin del método getAvenida2
+		
+	/**
+	* @param origen
+	* @param destino
+	* @return Punto[]
+	* 
+	* Obtiene el camino más corto entre el par de puntos dados.
+	* Devuelve un arreglo con la lista de puntos que conforman
+	* el camino mas corto, si es que existe uno, incluyendo los puntos
+	* de los extremos. Si los nodos no son alzcanzables devuelve "null".
+	*/
+		
 	public Punto[] obtenerCaminoMasCorto(Punto origen, Punto destino) {
+			int n = puntosInternosAux().size();
+			Punto[] vector = new Punto[n];
+			int inicio = getIndex(puntosInternosAux(),origen.getNombre());
+			int fin = getIndex(puntosInternosAux(),destino.getNombre());
+			vector= new Punto[n];
+					
+			int[] ultimo = new int[n];
+			boolean[] marcados = new boolean[n];
+			double[] distanciaMenor = new double[n];
+			
+			for(int i=0; i<n; i++){
+				ultimo[i]=1;
+				marcados[i]=false;
+				distanciaMenor[i]=MAX;
+			}
+		distanciaMenor[inicio]=0;
 		
-		
+		for(int t=1; t<n; t++){
+			double max = MAX;
+			int v = 1;
+			for(int j=0; j<n; j++){
+				if(!marcados[j] && (distanciaMenor[j]<=max)){
+					max=distanciaMenor[j];
+					v=j;
+					}
+			}
+			marcados[v]=true;
+			for(int k=1; k<n; k++){
+				if(!marcados[k]&&existeAvenidaPuntos(puntosInternosAux().get(v).getNombre(),puntosInternosAux().get(k).getNombre())){
+					if(distanciaMenor[k]>distanciaMenor[v]+getAvenida2(puntosInternosAux().get(v),puntosInternosAux().get(k)).getDistancia()){
+							distanciaMenor[k]=distanciaMenor[v]+getAvenida2(puntosInternosAux().get(v),puntosInternosAux().get(k)).getDistancia();
+							ultimo[k]=v;
+						};
+					};
+				}
+		}
+		int y=0;
+		while(fin!=inicio)
+		{
+			vector[y]= (Punto) puntosInternosAux().get(fin);
+			fin=ultimo[fin];
+			y++;
+		}
+		Punto[] salida = new Punto[y];
+		for(int qw=0; qw<y; qw++){
+			salida[qw]=vector[qw];}
+
+		return salida;
 	} // fin del método obtenerCaminoMasCorto
 	
 	/**
@@ -753,8 +849,54 @@ public class Red implements Serializable {
 	 * 
 	 */
 	public Punto[] obtenerCaminoMenosPeajes(Punto origen, Punto destino) {
-		
-		
+		int n = puntosInternosAux().size();
+		Punto[] vector = new Punto[n];
+		int inicio = getIndex(puntosInternosAux(),origen.getNombre());
+		int fin = getIndex(puntosInternosAux(),destino.getNombre());
+		vector= new Punto[n];
+					
+		int[] ultimo = new int[n];
+		boolean[] marcados = new boolean[n];
+		double[] peajeMenor = new double[n];
+			
+		for(int i=0; i<n; i++){
+			ultimo[i]=1;
+			marcados[i]=false;
+			peajeMenor[i]=MAX;
+		}
+		peajeMenor[inicio]=0;
+			
+		for(int t=1; t<n; t++){
+				double max = MAX;
+				int v = 1;
+				for(int j=0; j<n; j++){
+					if(!marcados[j] && (peajeMenor[j]<=max)){
+						max=peajeMenor[j];
+						v=j;
+						}
+				}			
+				marcados[v]=true;
+				for(int k=1; k<n; k++){
+					if(!marcados[k]&&existeAvenidaPuntos(puntosInternosAux().get(v).getNombre(),puntosInternosAux().get(k).getNombre())){
+						if(peajeMenor[k]>peajeMenor[v]+puntosInternosAux().get(k).getCosto()){
+							peajeMenor[k]=peajeMenor[v]+puntosInternosAux().get(k).getCosto();
+							ultimo[k]=v;
+						};
+					};
+				}
+		}
+			
+		int y=0;
+		while(fin!=inicio){
+			vector[y]= (Punto) puntosInternosAux().get(fin);
+			fin=ultimo[fin];
+			y++;}
+		Punto[] salida = new Punto[y];
+		for(int qw=0; qw<y; qw++){
+			salida[qw]=vector[qw];}
+
+		return salida;
+			
 	} // fin del método obtenerCaminoMenosPeajes
 	
 	/**
@@ -767,7 +909,38 @@ public class Red implements Serializable {
 	 */
 	public Punto[] obtenerPuntosAlcanzables(Punto p) {
 		
-		
+		Vector<Punto> alcanzables = new Vector<Punto>();
+		int n = puntosInternosAux().size();
+		Punto u;
+		boolean[] marcados = new boolean[n];
+		Punto[] salida = new Punto[n];
+		int inicio = getIndex(puntosInternosAux(),p.getNombre());
+		marcados[inicio]=true;
+		alcanzables.add(p);
+			
+		while (alcanzables.size()>0){
+			u=alcanzables.lastElement();
+			for(int i=0; i<n; i++){
+				if((existeAvenidaPuntos(u.getNombre(),puntosInternosAux().get(i).getNombre())&&!marcados[i])){
+					marcados[i]=true;
+					alcanzables.add(puntosInternosAux().get(i));
+				};
+			}
+			alcanzables.remove(u);			
+		}
+
+		Vector<Punto> vector = new Vector<Punto>();
+		int h=0;
+		for (int cont=0;cont<n;cont++)
+			if(marcados[cont]){
+				vector.add((Punto) puntosInternosAux().get(cont));
+				h++;
+				}
+		salida= new Punto[h];
+		for(int y=0; y<h; y++){
+			salida[y]=vector.get(y);
+		}
+		return salida;
 	} // fin del método obtenerPuntosAlcanzables
 	
 	/**
@@ -830,13 +1003,12 @@ public class Red implements Serializable {
 				int k = getNodoK(conjuntoSi.get(i), capResiduales, i);
 
 				long ak = capResiduales[i][k];
-				System.out.println("k: " + k);
 				// crea una clasificación para el nodo k
 				long clask[] = {k, ak, i};
 				clasificaciones.add(clask);
 
 				if(k == puntosInternos.size()+1) {	// hemos llegado al punto de salida
-					System.out.println("Entro " + k + " a " + i);
+
 					long min = obtenerMinimo(clasificaciones);
 					
 					fps.add(new Long(min));
@@ -849,9 +1021,6 @@ public class Red implements Serializable {
 						
 						capResiduales[p][s] += min;
 						capResiduales[s][p] -= min;
-						
-						System.out.println("de: " + p +" a: " + s + " valores: " +capResiduales[p][s]);
-						System.out.println("de: " + s +" a: " + p + " valores: " +capResiduales[s][p]);
 						
 						clasificaciones.remove(clasificaciones.lastElement());
 						
@@ -882,7 +1051,7 @@ public class Red implements Serializable {
 					
 					for(int j=0; j<puntosInternos.size()+2; j++) {
 						if(capResiduales[i][j] > 0 && j>i){
-							System.out.println("i: " + i + " j: " + j + " valores: " + capResiduales[i][j]);
+							
 							conjuntoSi.get(i).add(new Integer(j));
 						}
 					}
@@ -896,7 +1065,7 @@ public class Red implements Serializable {
 					int padre = (int)clasif[2];
 					int hijo = (int)clasif[0];
 					conjuntoSi.get(padre).remove(new Integer(hijo));
-					System.out.println(conjuntoSi.get(padre).size());
+
 					i=padre;
 					clasificaciones.remove(clasif);
 				}
@@ -1122,7 +1291,79 @@ public class Red implements Serializable {
 	 */
 	public Punto[] obtenerPuntosMenosNPeajes(Punto p, int numPeajes) {
 		
+		int n = puntosInternosAux().size();
+		Punto[] vector = new Punto[n];
+		int inicio = getIndex(puntosInternosAux(),p.getNombre());
+		vector= new Punto[n];
+				
+		int[] ultimo = new int[n];
+		boolean[] marcados = new boolean[n];
+		double[] cantPeajeMenor = new double[n];
 		
+		for(int i=0; i<n; i++){
+			ultimo[i]=numPeajes+1;
+			marcados[i]=false;
+			cantPeajeMenor[i]=MAX;
+		}
+		cantPeajeMenor[inicio]=0;
+		ultimo[inicio]=0;
+		
+		for(int t=1; t<n; t++){
+				double max = MAX;
+				int v = 1;
+				for(int j=0; j<n; j++){
+					if(!marcados[j] && (cantPeajeMenor[j]<=max)){
+						max=cantPeajeMenor[j];
+						v=j;
+						}
+				}			
+				marcados[v]=true;
+				for(int k=1; k<n; k++){
+					if(!marcados[k]&&existeAvenidaPuntos(puntosInternosAux().get(v).getNombre(),puntosInternosAux().get(k).getNombre())){
+						if(cantPeajeMenor[k]>cantPeajeMenor[v]+1){
+							cantPeajeMenor[k]=cantPeajeMenor[v]+1;
+							ultimo[k]=v;
+						};
+					};
+				}
+		}
+		int y=0;
+		for(int x=0; x<n; x++){
+			if(cantPeajeMenor[x]<=numPeajes){
+				
+				vector[y]= (Punto) puntosInternosAux().get(x);
+				if(puntosInternosAux().get(x).getNombre().equals(acceso.getNombre())){
+					vector[y]= (Punto) acceso;
+				}
+				if(puntosInternosAux().get(x).getNombre().equals(salida.getNombre())){
+					vector[y]= (Punto) salida;
+				}
+				y++;}
+		}
+		Punto[] salida = new Punto[y];
+		for(int qw=0; qw<y; qw++){
+			salida[qw]=vector[qw];}
+
+		return salida;
 	} // fin del método obtenerPuntosMenosNPeajes
+
+	
+	/**
+	 * @param p
+	 * @param nombre
+	 * @return int
+	 * 
+	 * Devuelve la posición en el vector de puntos internos del punto 
+	 * cuyo nombre se pasa como parámetro.
+	 */
+	private int getIndex(Vector<PuntoInterno> p, String nombre ) {
+		
+		for (int i = 0; i < p.size(); i++) {
+			PuntoInterno puntoInterno = (PuntoInterno) p.get(i);
+			if(puntoInterno.getNombre().equals(nombre))
+				return i;
+		}
+		return -1;
+	} // fin del método getIndex
 	
 } // fin de la clase Red
