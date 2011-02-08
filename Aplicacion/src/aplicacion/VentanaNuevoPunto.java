@@ -1,14 +1,19 @@
 package aplicacion;
 
+import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 /**
@@ -64,17 +69,31 @@ public class VentanaNuevoPunto extends JDialog {
         
         fieldNombre = new JTextField();
         fieldNombre.setText("");
+        fieldNombre.setPreferredSize(new Dimension(90, 20));
         
         // Campo Costo
         labelCosto = new JLabel();
-        labelCosto.setText("Costo: ");
+        labelCosto.setText("    Costo: ");
 
         fieldCosto = new JTextField();
         fieldCosto.setText("");
+        fieldCosto.setPreferredSize(new Dimension(90, 20));
+        fieldCosto.addActionListener(new ActionListener(){
+
+			public void actionPerformed(ActionEvent evento) {
+
+				if(verificarCampos()) {
+					
+					app.agregarPuntoPosicion(x, y, fieldNombre.getText(), fieldCosto.getText());
+					dispose();
+				}
+			}
+		});
 
         // Botón Aceptar
 		botonAceptar = new JButton();
 		botonAceptar.setText("Aceptar");
+		botonAceptar.setName("Aceptar");
 		botonAceptar.addActionListener(new ActionListener(){
 
 			public void actionPerformed(ActionEvent evento) {
@@ -86,10 +105,12 @@ public class VentanaNuevoPunto extends JDialog {
 				}
 			}
 		});
+		botonAceptar.addKeyListener(new KeyListener());
 		
 		// Botón Cancelar
 		botonCancelar = new JButton();
         botonCancelar.setText("Cancelar");
+        botonCancelar.setName("Cancelar");
         botonCancelar.addActionListener(new ActionListener(){
 
 			public void actionPerformed(ActionEvent evento) {
@@ -97,61 +118,52 @@ public class VentanaNuevoPunto extends JDialog {
 				dispose();
 			}
 		});
+        botonCancelar.addKeyListener(new KeyListener());
         
         setLayout();
 
 	} // fin del método inicializar
 	
 	/**
-	 * Establece el Layout del JDialog.
+	 * Establece el Layout del JDialog y agrega los componentes.
 	 */
 	private void setLayout() {
 		
-        GroupLayout ventanaLayout = new GroupLayout(this.getContentPane());
+		BorderLayout ventanaLayout = new BorderLayout();
         this.getContentPane().setLayout(ventanaLayout);
         
-        ventanaLayout.setHorizontalGroup(
-        		ventanaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(ventanaLayout.createSequentialGroup()
-                    .addGap(32, 32, 32)
-                    .addGroup(ventanaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, ventanaLayout.createSequentialGroup()
-                            .addComponent(botonAceptar)
-                            .addGap(18, 18, 18)
-                            .addComponent(botonCancelar)
-                            .addContainerGap())
-                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, ventanaLayout.createSequentialGroup()
-                            .addComponent(labelTitulo)
-                            .addGap(28, 28, 28))
-                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, ventanaLayout.createSequentialGroup()
-                            .addGroup(ventanaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(labelCosto)
-                                .addComponent(labelNombre))
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                            .addGroup(ventanaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(fieldNombre, javax.swing.GroupLayout.DEFAULT_SIZE, 125, Short.MAX_VALUE)
-                                .addComponent(fieldCosto, javax.swing.GroupLayout.DEFAULT_SIZE, 125, Short.MAX_VALUE))
-                            .addGap(45, 45, 45))))
-            );
-        	ventanaLayout.setVerticalGroup(
-        		ventanaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, ventanaLayout.createSequentialGroup()
-                    .addContainerGap()
-                    .addComponent(labelTitulo)
-                    .addGap(28, 28, 28)
-                    .addGroup(ventanaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(fieldNombre, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(labelNombre))
-                    .addGap(18, 18, 18)
-                    .addGroup(ventanaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(fieldCosto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(labelCosto))
-                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 118, Short.MAX_VALUE)
-                    .addGroup(ventanaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(botonAceptar)
-                        .addComponent(botonCancelar))
-                    .addContainerGap())
-            );
+        // Titulo
+        JPanel panelSuperior = new JPanel();
+        panelSuperior.add(labelTitulo);
+        panelSuperior.setPreferredSize(new Dimension(280, 40));
+        
+        // Campos
+        JPanel panelCentral = new JPanel();
+        panelCentral.setPreferredSize(new Dimension(280, 200));
+        
+        JPanel panelNombre = new JPanel();
+        panelNombre.add(labelNombre);
+        panelNombre.add(fieldNombre);
+        panelNombre.setPreferredSize(new Dimension(280, 40));
+        
+        JPanel panelCosto = new JPanel();
+        panelCosto.add(labelCosto);
+        panelCosto.add(fieldCosto);
+        panelCosto.setPreferredSize(new Dimension(280, 40));
+        
+        panelCentral.add(panelNombre);
+        panelCentral.add(panelCosto);
+        
+        // Botones
+        JPanel panelInferior = new JPanel();
+        panelInferior.add(botonAceptar);
+        panelInferior.add(botonCancelar);
+        panelInferior.setPreferredSize(new Dimension(280, 40));
+        
+        this.add(panelSuperior, BorderLayout.NORTH);
+        this.add(panelCentral, BorderLayout.CENTER);
+        this.add(panelInferior, BorderLayout.SOUTH);
+		
 	} // fin del método setLayout
 	
 	/**
@@ -234,5 +246,41 @@ public class VentanaNuevoPunto extends JDialog {
 		
 		JOptionPane.showMessageDialog(this, mensaje, "Inane error", JOptionPane.ERROR_MESSAGE);
 	}
+	
+	/**
+	 * @author Goti
+	 * 
+	 * Esta clase se utiliza de manera auxiliar para implementar
+	 * un key listener para la interfaz de nuevo punto.
+	 */
+	private class KeyListener extends KeyAdapter {
+		
+        public void keyPressed(KeyEvent e) {
+        	
+            String targ = "ENTER";
+            
+            String key = e.getKeyText(e.getKeyCode());
+            key = key.toUpperCase();
+            
+            // el componente que despertó el evento
+            String comp = e.getComponent().getName();
+            
+            // maneja la pulsación de la tecla ENTER
+            if (key.equals("INTRODUZCA")) {
+            	
+            	if(comp.equals("Aceptar")) {
+            		
+            		if(verificarCampos()) {
+    					
+    					app.agregarPuntoPosicion(x, y, fieldNombre.getText(), fieldCosto.getText());
+    					dispose();
+    				}
+            	}
+            	else {
+            		dispose();
+            	}
+            }
+        }
+    } // fin de clase KeyListener
 	
 } // fin de clase VentanaNuevoPunto

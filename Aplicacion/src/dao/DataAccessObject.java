@@ -19,7 +19,7 @@ import java.io.Serializable;
 public abstract class DataAccessObject {
 	
 	// Constante de clase que indica la ruta donde se almacenarán
-	// los archivos. Se presupone el directorio actual de la aplicación.
+	// los archivos. Se supone inicialmente el directorio actual de la aplicación.
 	private static String directorio = "/";
 	
 	/**
@@ -30,20 +30,16 @@ public abstract class DataAccessObject {
 	 * Todas los objetos para los que tenga referencias también se harán
 	 * persistir en el mismo archivo, así como las variables de tipos primitivos.
 	 */
-	public static void persistir(Serializable objeto, String nombreArchivo){
+	public static void persistir(Serializable objeto, String nombreArchivo) throws Exception{
 		
 		FileOutputStream fos = null;	// archivo de salida para el stream
 		ObjectOutputStream out = null;	// objeto stream de salida
 		
-		try {
-			fos = new FileOutputStream(directorio + "/" + nombreArchivo);
-			out = new ObjectOutputStream(fos);
-			out.writeObject(objeto);	// escribe el objeto
-			out.close();	// cierra el archivo y libera todas las referencias al mismo en memoria principal
-		}
-		catch(IOException ex){
-			ex.printStackTrace();
-		}
+		fos = new FileOutputStream(directorio + "/" + nombreArchivo);
+		out = new ObjectOutputStream(fos);
+		out.writeObject(objeto);	// escribe el objeto
+		out.close();	// cierra el archivo y libera todas las referencias al mismo en memoria principal
+		
 	} // fin de método persistir
 	
 	/**
@@ -53,24 +49,17 @@ public abstract class DataAccessObject {
 	 * Lee un archivo de nombre nombreArchivo, recupera el objeto
 	 * serializado y lo devuelve.
 	 */
-	public static Object cargar(String nombreArchivo){
+	public static Object cargar(String nombreArchivo) throws Exception{
 		
 		Object instancia = null;	// almacena la referencia al objeto recuperado
 		FileInputStream fis = null;	// archivo de entrada para el stream
 		ObjectInputStream in = null; // objeto stream de entrada
 		
-		try {
-			fis = new FileInputStream(directorio + "/" + nombreArchivo);
-			in = new ObjectInputStream(fis);
-			instancia = in.readObject();
-			in.close();
-		}
-		catch(IOException ex){
-			ex.printStackTrace();
-		}
-		catch(ClassNotFoundException ex){
-			ex.printStackTrace();
-		}
+		fis = new FileInputStream(directorio + "/" + nombreArchivo);
+		in = new ObjectInputStream(fis);
+		instancia = in.readObject();
+		in.close();
+		
 		return instancia ;
 	} // fin de método cargar
 	

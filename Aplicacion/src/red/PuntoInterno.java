@@ -24,7 +24,7 @@ public class PuntoInterno extends Punto implements Serializable {
 		super(nombre, x, y);
 		
 		this.costo = costo;
-	}
+	} // fin del constructor
 	
 	/**
 	 * @return double
@@ -34,5 +34,16 @@ public class PuntoInterno extends Punto implements Serializable {
 	public double getCosto() {
 		
 		return costo;
-	}
-}
+	} // fin del método getCosto
+	
+	/**
+	 * @param c
+	 * 
+	 * Establece el valor del costo del punto.
+	 */
+	public void setCosto(double c) {
+		
+		costo = c;
+	} // fin del método setCosto
+	
+} // fin de clase PuntoInterno
