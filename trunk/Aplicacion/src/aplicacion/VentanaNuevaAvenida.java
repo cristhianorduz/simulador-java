@@ -1,14 +1,19 @@
 package aplicacion;
 
+import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.LayoutStyle;
 
@@ -58,10 +63,11 @@ public class VentanaNuevaAvenida extends JDialog {
 
         // Campo Punto de origen
         labelPuntoOrigen = new JLabel();
-        labelPuntoOrigen.setText("Punto de origen: ");
+        labelPuntoOrigen.setText("  Punto de origen: ");
         
         fieldPuntoOrigen = new JTextField();
         fieldPuntoOrigen.setText("");
+        fieldPuntoOrigen.setPreferredSize(new Dimension(90, 20));
         
         // Campo Punto de destino
         labelPuntoDestino = new JLabel();
@@ -69,55 +75,48 @@ public class VentanaNuevaAvenida extends JDialog {
         
         fieldPuntoDestino = new JTextField();
         fieldPuntoDestino.setText("");
+        fieldPuntoDestino.setPreferredSize(new Dimension(90, 20));
         
         // Campo Trafico maximo
         labelTraficoMax = new JLabel();
-        labelTraficoMax.setText("Tráfico máximo: ");
+        labelTraficoMax.setText("   Tráfico máximo: ");
 
         fieldTraficoMax = new JTextField();
         fieldTraficoMax.setText("");
+        fieldTraficoMax.setPreferredSize(new Dimension(90, 20));
         
     	// Campo Distancia
         labelDistancia = new JLabel();
-        labelDistancia.setText("Distancia: ");
+        labelDistancia.setText("               Distancia: ");
 
         fieldDistancia = new JTextField();
         fieldDistancia.setText("");
+        fieldDistancia.setPreferredSize(new Dimension(90, 20));
+        fieldDistancia.addActionListener(new ActionListener(){
+
+			public void actionPerformed(ActionEvent evento) {
+				
+				manejarEvento();
+			}
+		});
 
         // Botón Aceptar
 		botonAceptar = new JButton();
 		botonAceptar.setText("Aceptar");
+		botonAceptar.setName("Aceptar");
 		botonAceptar.addActionListener(new ActionListener(){
 
 			public void actionPerformed(ActionEvent evento) {
 				
-				if(validarCampos()) {
-					
-					String origen = fieldPuntoOrigen.getText();
-					String destino = fieldPuntoDestino.getText();
-					
-					// Solo se puede tener una avenida entre pares origen,destino.
-					// Si no existe una avenida para ese par de puntos,
-					// solicita a la aplicacion que cree una.
-					if(!aplicacion.existeAvenidaPuntos(origen, destino)) {
-						
-						long trafico = Long.parseLong(fieldTraficoMax.getText());
-
-						double dist = Double.parseDouble(fieldDistancia.getText());
-						
-						aplicacion.agregarAvenidaEntrePuntos(origen, destino, trafico, dist);
-						dispose();
-					}
-					else {		
-						mostrarMensajeInfo("Ya existe una avenida para ese par de puntos!");
-					}
-				}
+				manejarEvento();
 			}
 		});
+		botonAceptar.addKeyListener(new KeyListener());
 		
 		// Botón Cancelar
 		botonCancelar = new JButton();
         botonCancelar.setText("Cancelar");
+        botonCancelar.setName("Cancelar");
         botonCancelar.addActionListener(new ActionListener(){
 
 			public void actionPerformed(ActionEvent evento) {
@@ -125,75 +124,119 @@ public class VentanaNuevaAvenida extends JDialog {
 				dispose();
 			}
 		});
+        botonCancelar.addKeyListener(new KeyListener());
         
         setLayout();
         
 	} // fin del método inicializar
 	
 	/**
-	 * Establece el Layout del JDialog.
+	 * Establece el Layout del JDialog y agrega los componentes.
 	 */
 	private void setLayout() {
 		
-        GroupLayout ventanaLayout = new GroupLayout(this.getContentPane());
+		BorderLayout ventanaLayout = new BorderLayout();
         this.getContentPane().setLayout(ventanaLayout);
         
-        ventanaLayout.setHorizontalGroup(
-        	ventanaLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-            .addGroup(ventanaLayout.createSequentialGroup()
-                .addGap(32, 32, 32)
-                .addGroup(ventanaLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                    .addGroup(GroupLayout.Alignment.TRAILING, ventanaLayout.createSequentialGroup()
-                        .addComponent(botonAceptar)
-                        .addGap(18, 18, 18)
-                        .addComponent(botonCancelar)
-                        .addContainerGap())
-                    .addGroup(GroupLayout.Alignment.TRAILING, ventanaLayout.createSequentialGroup()
-                        .addComponent(labelTitulo)
-                        .addGap(28, 28, 28))
-                    .addGroup(GroupLayout.Alignment.TRAILING, ventanaLayout.createSequentialGroup()
-                        .addGroup(ventanaLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                            .addGroup(ventanaLayout.createParallelGroup(GroupLayout.Alignment.TRAILING)
-                                .addComponent(labelDistancia)
-                                .addComponent(labelTraficoMax))
-                            .addComponent(labelPuntoDestino)
-                            .addComponent(labelPuntoOrigen))
-                        .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(ventanaLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                            .addComponent(fieldPuntoOrigen, GroupLayout.DEFAULT_SIZE, 119, Short.MAX_VALUE)
-                            .addComponent(fieldPuntoDestino, GroupLayout.DEFAULT_SIZE, 119, Short.MAX_VALUE)
-                            .addComponent(fieldDistancia, GroupLayout.DEFAULT_SIZE, 119, Short.MAX_VALUE)
-                            .addComponent(fieldTraficoMax, GroupLayout.DEFAULT_SIZE, 119, Short.MAX_VALUE))
-                        .addGap(45, 45, 45))))
-        );
-        ventanaLayout.setVerticalGroup(
-        	ventanaLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-            .addGroup(GroupLayout.Alignment.TRAILING, ventanaLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(labelTitulo)
-                .addGap(28, 28, 28)
-                .addGroup(ventanaLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                    .addComponent(fieldPuntoOrigen, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                    .addComponent(labelPuntoOrigen))
-                .addGap(18, 18, 18)
-                .addGroup(ventanaLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                    .addComponent(fieldPuntoDestino, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                    .addComponent(labelPuntoDestino))
-                .addGap(18, 18, 18)
-                .addGroup(ventanaLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                    .addComponent(labelTraficoMax)
-                    .addComponent(fieldTraficoMax, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addGroup(ventanaLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                    .addComponent(labelDistancia)
-                    .addComponent(fieldDistancia, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, 42, Short.MAX_VALUE)
-                .addGroup(ventanaLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                    .addComponent(botonAceptar)
-                    .addComponent(botonCancelar))
-                .addContainerGap())
-        );
+        // Titulo
+        JPanel panelSuperior = new JPanel();
+        panelSuperior.add(labelTitulo);
+        panelSuperior.setPreferredSize(new Dimension(280, 40));
+        
+        // Campos
+        JPanel panelCentral = new JPanel();
+        panelCentral.setPreferredSize(new Dimension(280, 200));
+        
+        JPanel panelOrigen = new JPanel();
+        panelOrigen.add(labelPuntoOrigen);
+        panelOrigen.add(fieldPuntoOrigen);
+        panelOrigen.setPreferredSize(new Dimension(280, 40));
+        
+        JPanel panelDestino = new JPanel();
+        panelDestino.add(labelPuntoDestino);
+        panelDestino.add(fieldPuntoDestino);
+        panelDestino.setPreferredSize(new Dimension(280, 40));
+        
+        JPanel panelTrafico = new JPanel();
+        panelTrafico.add(labelTraficoMax);
+        panelTrafico.add(fieldTraficoMax);
+        panelTrafico.setPreferredSize(new Dimension(280, 40));
+        
+        JPanel panelDistancia = new JPanel();
+        panelDistancia.add(labelDistancia);
+        panelDistancia.add(fieldDistancia);
+        panelDistancia.setPreferredSize(new Dimension(280, 40));
+        
+        panelCentral.add(panelOrigen);
+        panelCentral.add(panelDestino);
+        panelCentral.add(panelTrafico);
+        panelCentral.add(panelDistancia);
+        
+        // Botones
+        JPanel panelInferior = new JPanel();
+        panelInferior.add(botonAceptar);
+        panelInferior.add(botonCancelar);
+        panelInferior.setPreferredSize(new Dimension(280, 40));
+        
+        this.add(panelSuperior, BorderLayout.NORTH);
+        this.add(panelCentral, BorderLayout.CENTER);
+        this.add(panelInferior, BorderLayout.SOUTH);
+        
 	} // fin del método setLayout
+	
+	/**
+	 * Ejecuta las acciones de obtención de valores y verificación
+	 * luego de completarse el formulario para ingresar nueva avenida.
+	 */
+	private void manejarEvento() {
+		
+		if(validarCampos()) {
+			
+			String origen = fieldPuntoOrigen.getText();
+			String destino = fieldPuntoDestino.getText();
+			
+			// Solo se puede tener una avenida entre pares origen,destino.
+			// Si no existe una avenida para ese par de puntos,
+			// solicita a la aplicacion que cree una.
+			if(!aplicacion.existeAvenidaPuntos(origen, destino)) {
+				
+				if(aplicacion.avenidaAtraviesaPuntos(origen, destino)) {
+					
+					int n = JOptionPane.showConfirmDialog(
+						    this,
+						    "La avenida atraviesa uno o más puntos  de la red. Desea dibujarla de todos modos?",
+						    "An Inane Question",
+						    JOptionPane.YES_NO_OPTION);
+					
+					if(n == 0) {	// decidió dibujarla de todos modos
+						
+						long trafico = Long.parseLong(fieldTraficoMax.getText());
+
+						double dist = Double.parseDouble(fieldDistancia.getText());
+						
+						aplicacion.agregarAvenidaEntrePuntos(origen, destino, trafico, dist);
+						
+						dispose();
+					}
+				}
+				else {	// camino despejado!
+					
+					long trafico = Long.parseLong(fieldTraficoMax.getText());
+
+					double dist = Double.parseDouble(fieldDistancia.getText());
+					
+					aplicacion.agregarAvenidaEntrePuntos(origen, destino, trafico, dist);
+					
+					dispose();
+				}
+			}
+			else {
+				
+				mostrarMensajeInfo("Ya existe una avenida para ese par de puntos!");
+			}
+		}
+		
+	} // fin del método manejarEvento
 	
 	/**
 	 * @return
@@ -267,5 +310,37 @@ public class VentanaNuevaAvenida extends JDialog {
 		
 		JOptionPane.showMessageDialog(this, mensaje);
 	} // fin del método mostrarMensajeInfo
+	
+	/**
+	 * @author Goti
+	 * 
+	 * Esta clase se utiliza de manera auxiliar para implementar
+	 * un key listener para la interfaz de nueva avenida.
+	 */
+	private class KeyListener extends KeyAdapter {
+		
+        public void keyPressed(KeyEvent e) {
+        	
+            String targ = "ENTER";
+            
+            String key = e.getKeyText(e.getKeyCode());
+            key = key.toUpperCase();
+            
+            // el componente que despertó el evento
+            String comp = e.getComponent().getName();
+            
+            // maneja la pulsación de la tecla ENTER
+            if (key.equals("INTRODUZCA")) {
+            	
+            	if(comp.equals("Aceptar")) {
+            		
+            		manejarEvento();
+            	}
+            	else {
+            		dispose();
+            	}
+            }
+        }
+    } // fin de clase KeyListener
 
 } // fin de clase VentanaNuevaAvenida

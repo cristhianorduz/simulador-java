@@ -61,7 +61,7 @@ public class Avenida implements Serializable {
 	public long getTraficoMax() {
 		
 		return traficoMaximo;
-	}
+	} // fin del métoto getTraficoMax
 	
 	/**
 	 * @return double
@@ -71,7 +71,7 @@ public class Avenida implements Serializable {
 	public double getDistancia() {
 		
 		return distancia;
-	}
+	} // fin del método getDistancia
 	
 	/**
 	 * @return boolean
@@ -82,7 +82,7 @@ public class Avenida implements Serializable {
 	public boolean estaHabilitada() {
 		
 		return habilitada;
-	}
+	} // fin del método estaHabilitada
 	
 	/**
 	 * @param estado
@@ -92,5 +92,25 @@ public class Avenida implements Serializable {
 	public void setEstado(boolean estado) {
 		
 		habilitada = estado;
-	}
+	} // fin del método setEstado
+	
+	/**
+	 * @param t
+	 * 
+	 * Establece el trafico máximo.
+	 */
+	public void setTraficoMax(long t) {
+		
+		traficoMaximo = t;
+	} // fin del método setTraficoMax
+	
+	/**
+	 * @param d
+	 * 
+	 * Establece la distancia.
+	 */
+	public void setDistancia(double d) {
+		
+		distancia = d;
+	} // fin del método setDistancia
 }

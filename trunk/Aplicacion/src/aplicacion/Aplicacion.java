@@ -6,13 +6,17 @@ import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.geom.Line2D;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
 
 import javax.swing.*;
-
 import dao.DataAccessObject;
 
 import red.Avenida;
@@ -54,9 +58,8 @@ public class Aplicacion extends JFrame{
 	private JMenu consultas;
 	private JMenuItem ingresarPunto;
 	private JMenuItem ingresarAv;
-	private JMenuItem editarAv;
-	private JMenuItem verNodo;
-	private JMenuItem verAv;
+	private JMenuItem eliminarNodo;
+	private JMenuItem eliminarAv;
 	private JMenuItem opcA;
 	private JMenuItem opcB;
 	private JMenuItem opcC;
@@ -74,9 +77,11 @@ public class Aplicacion extends JFrame{
 	// Panel contenedor principal
 	private JPanel panelContenedor;
 	
-	// Panele contenedores secundarios
-	private JPanel panelSecundarioI;
-	private JPanel panelSecundarioD;
+	// Paneles contenedores secundarios
+	private JPanel panelSecundarioSup;
+	private JPanel panelSecundarioIzq;
+	private JPanel panelSecundarioDer;
+	private JPanel panelSecundarioInf;
 	
 	// Panel de visualización del grafo
 	private JPanel panelGrafo;
@@ -90,6 +95,7 @@ public class Aplicacion extends JFrame{
 	private JTextField fieldDistancia;
 	private JLabel labelEstado;
 	private JComboBox boxEstado;
+	private JButton botonEditarAv;
 	
 	// Panel de visualización de punto seleccionado
 	private JPanel panelPunto;
@@ -97,6 +103,7 @@ public class Aplicacion extends JFrame{
 	private JTextField fieldNombre;
 	private JLabel labelCosto;
 	private JTextField fieldCosto;
+	private JButton botonEditarPunto;
 	
 	// Panel de visualización de resultados de consultas
 	private JPanel panelResultado;
@@ -110,7 +117,7 @@ public class Aplicacion extends JFrame{
 
 		ap.setSize( 800, 600 );
 		ap.setLocationRelativeTo(null);
-		ap.setResizable(true);
+		ap.setResizable(false);
 		ap.setVisible(true);
 	} // fin del método main
 	
@@ -158,12 +165,12 @@ public class Aplicacion extends JFrame{
 		agregarPanelPrincipal();
 		
 		// Se instancia la clase Red
-		red = new Red(180, 1, 180, 340);
+		red = new Red(180, 20, 180, 400);
 		
 		// Se inicializan los indices de avenida y punto seleccionados
 		indiceAvenida = -1;
 		indicePunto = -1;
-		
+
 	} // fin del método inicializar
 	
 	
@@ -225,7 +232,8 @@ public class Aplicacion extends JFrame{
 		limpiarConf.addActionListener(new ActionListener(){
 
 			public void actionPerformed(ActionEvent evento) {
-
+				
+				mostrarPreguntaGuardar();
 			}
 		});
 	
@@ -236,7 +244,8 @@ public class Aplicacion extends JFrame{
 		salir.addActionListener(new ActionListener(){
 
 			public void actionPerformed(ActionEvent evento) {
-
+				
+				dispose();
 			}
 		});
 		
@@ -274,7 +283,7 @@ public class Aplicacion extends JFrame{
 		
 		// Opcion Ingresar Punto
 		ingresarPunto = new JMenuItem();
-		ingresarPunto.setText("Ingresar Punto   Alt+A+P");
+		ingresarPunto.setText("Ingresar Punto   Alt+C+P");
 		ingresarPunto.setMnemonic('P');
 		ingresarPunto.addActionListener(new ActionListener(){
 
@@ -287,7 +296,7 @@ public class Aplicacion extends JFrame{
 		
 		// Opcion Ingresar Avenida
 		ingresarAv = new JMenuItem();
-		ingresarAv.setText("Ingresar Avenida   Alt+A+A");
+		ingresarAv.setText("Ingresar Avenida   Alt+C+A");
 		ingresarAv.setMnemonic('A');
 		ingresarAv.addActionListener(new ActionListener(){
 
@@ -297,100 +306,101 @@ public class Aplicacion extends JFrame{
 			}
 		});
 		
-		// Opcion Editar Avenida
-		editarAv = new JMenuItem();
-		editarAv.setText("Editar Avenida   Alt+A+E");
-		editarAv.setMnemonic('E');
-		editarAv.addActionListener(new ActionListener(){
+		// Opcion Eliminar Nodo
+		eliminarNodo = new JMenuItem();
+		eliminarNodo.setText("Eliminar Nodo   Alt+C+D");
+		eliminarNodo.setMnemonic('D');
+		eliminarNodo.addActionListener(new ActionListener(){
 
 			public void actionPerformed(ActionEvent evento) {
-
+				
+				mostrarMensajeInfo("Haz click en el panel para seleccionar el punto a eliminar.");
+				panelDibujo.setMouseListener(4);
 			}
 		});
 		
-		// Opcion Ver Nodo
-		verNodo = new JMenuItem();
-		verNodo.setText("Ver Nodo   Alt+A+V");
-		verNodo.setMnemonic('V');
-		verNodo.addActionListener(new ActionListener(){
+		// Opcion Eliminar Avenida
+		eliminarAv = new JMenuItem();
+		eliminarAv.setText("Eliminar Avenida   Alt+C+B");
+		eliminarAv.setMnemonic('B');
+		eliminarAv.addActionListener(new ActionListener(){
 
 			public void actionPerformed(ActionEvent evento) {
-
-			}
-		});
-		
-		// Opcion Ver Avenida
-		verAv = new JMenuItem();
-		verAv.setText("Ver Avenida   Alt+A+B");
-		verAv.setMnemonic('B');
-		verAv.addActionListener(new ActionListener(){
-
-			public void actionPerformed(ActionEvent evento) {
-
+				
+				mostrarMensajeInfo("Haz click en el panel para seleccionar la avenida a eliminar.");
+				panelDibujo.setMouseListener(5);
 			}
 		});
 		
 		// Opcion Camino más Corto
 		opcA = new JMenuItem();
-		opcA.setText("Camino más Corto   Alt+A+G");
+		opcA.setText("Camino más Corto   Alt+C+G");
 		opcA.setMnemonic('G');
 		opcA.addActionListener(new ActionListener(){
 
 			public void actionPerformed(ActionEvent evento) {
-
+				
+				mostrarMensajeInfo("Haz click en el panel para seleccionar el nodo origen.");
+				panelDibujo.setMouseListener(6);
 			}
 		});
 		
 		// Opcion Camino con menos peajes
 		opcB = new JMenuItem();
-		opcB.setText("Camino con menos peajes   Alt+A+H");
+		opcB.setText("Camino con menos peajes   Alt+C+H");
 		opcB.setMnemonic('H');
 		opcB.addActionListener(new ActionListener(){
 
 			public void actionPerformed(ActionEvent evento) {
-
+				
+				mostrarMensajeInfo("Haz click en el panel para seleccionar el nodo origen.");
+				panelDibujo.setMouseListener(7);
 			}
 		});
 		
 		// Opcion Puntos alcanzables
 		opcC = new JMenuItem();
-		opcC.setText("Puntos alcanzables   Alt+A+J");
+		opcC.setText("Puntos alcanzables   Alt+C+J");
 		opcC.setMnemonic('J');
 		opcC.addActionListener(new ActionListener(){
 
 			public void actionPerformed(ActionEvent evento) {
-
+				
+				mostrarMensajeInfo("Haz click en el panel para seleccionar el nodo origen.");
+				panelDibujo.setMouseListener(8);
 			}
 		});
 		
 		// Opcion Máximo tráfico en red
 		opcD = new JMenuItem();
-		opcD.setText("Máximo tráfico en red   Alt+A+K");
+		opcD.setText("Máximo tráfico en red   Alt+C+K");
 		opcD.setMnemonic('K');
 		opcD.addActionListener(new ActionListener(){
 
 			public void actionPerformed(ActionEvent evento) {
-
+				
+				obtenerMaximoTraficoEnRed();
 			}
 		});
 		
 		// Opcion Camino con peajes máximos
 		opcE = new JMenuItem();
-		opcE.setText("Camino con peajes máximos   Alt+A+L");
+		opcE.setText("Camino con menos de N peajes   Alt+C+L");
 		opcE.setMnemonic('L');
 		opcE.addActionListener(new ActionListener(){
 
 			public void actionPerformed(ActionEvent evento) {
-
+				
+				mostrarMensajeInfo("Haz click en el panel para seleccionar el nodo origen.");
+				panelDibujo.setMouseListener(9);
 			}
 		});
 		
 		consultas.add(ingresarPunto);
 		consultas.add(ingresarAv);
 		consultas.addSeparator();
-		consultas.add(editarAv);
-		consultas.add(verNodo);
-		consultas.add(verAv);
+		consultas.add(eliminarNodo);
+		consultas.add(eliminarAv);
 		consultas.addSeparator();
 		consultas.add(opcA);
 		consultas.add(opcB);
@@ -421,7 +431,8 @@ public class Aplicacion extends JFrame{
 		acercaDe.addActionListener(new ActionListener(){
 
 			public void actionPerformed(ActionEvent evento) {
-
+				
+				mostrarAcercaDe();
 			}
 		});
 		
@@ -432,7 +443,8 @@ public class Aplicacion extends JFrame{
 		ayudaProg.addActionListener(new ActionListener(){
 
 			public void actionPerformed(ActionEvent evento) {
-
+				
+				mostrarManualAyuda();
 			}
 		});
 		
@@ -453,15 +465,32 @@ public class Aplicacion extends JFrame{
 		panelContenedor = new JPanel();
 		
 		// Layout
-		GridLayout panelContLayout = new GridLayout(1, 2);
+		BorderLayout panelContLayout = new BorderLayout();
 		panelContenedor.setLayout(panelContLayout);
 		
-		agregarPanelSecundarioI();
+		// Agrega los paneles contenedores
+		agregarPanelSecundarioSup();
 		
-		agregarPanelSecundarioD();
+		agregarPanelSecundarioIzq();
+		
+		agregarPanelSecundarioDer();
+		
+		agregarPanelSecundarioInf();
 		
 		this.getContentPane().add(panelContenedor);
 	} // fin del método agregarPanelPrincipal
+	
+	/**
+	 * Este método crea el panel secundario superior y lo agrega al contenedor principal.
+	 */
+	private void agregarPanelSecundarioSup() {
+		
+		panelSecundarioSup = new JPanel();
+		
+		panelSecundarioSup.setPreferredSize(new Dimension(800, 20));
+		
+		panelContenedor.add(panelSecundarioSup, BorderLayout.NORTH);
+	} // fin del método agregarPanelSecundarioSup
 	
 	/**
 	 * Este método crea el panel secundario izquierdo y lo agrega al contenedor principal.
@@ -470,9 +499,9 @@ public class Aplicacion extends JFrame{
 	 * - panelPunto
 	 * - panelResultado
 	 */
-	private void agregarPanelSecundarioI() {
+	private void agregarPanelSecundarioIzq() {
 		
-		panelSecundarioI = new JPanel();
+		panelSecundarioIzq = new JPanel();
 		
 		// Se agrega el panel de avenida
 		crearPanelAvenida();
@@ -483,29 +512,41 @@ public class Aplicacion extends JFrame{
 		// Se agrega el panel de resultado
 		crearPanelResultado();
 		
-		panelSecundarioI.add(panelAvenida);
-		panelSecundarioI.add(panelPunto);
-		panelSecundarioI.add(panelResultado);
+		panelSecundarioIzq.add(panelAvenida);
+		panelSecundarioIzq.add(panelPunto);
+		panelSecundarioIzq.add(panelResultado);
 		
-		panelContenedor.add(panelSecundarioI);
-	} // fin del método agregarPanelSecundarioI
+		panelContenedor.add(panelSecundarioIzq, BorderLayout.CENTER);
+	} // fin del método agregarPanelSecundarioIzq
 	
 	/**
 	 * Este método crea el panel secundario derecho y lo agrega al contenedor principal.
 	 * Este panel contiene el elemento:
 	 * - panelGrafo
 	 */
-	private void agregarPanelSecundarioD() {
+	private void agregarPanelSecundarioDer() {
 		
-		panelSecundarioD = new JPanel();
+		panelSecundarioDer = new JPanel();
 		
 		// Se agrega el panel de grafo
 		crearPanelGrafo();
 		
-		panelSecundarioD.add(panelGrafo);
+		panelSecundarioDer.add(panelGrafo);
 		
-		panelContenedor.add(panelSecundarioD);
-	} // fin del método agregarPanelSecundarioD
+		panelContenedor.add(panelSecundarioDer, BorderLayout.EAST);
+	} // fin del método agregarPanelSecundarioDer
+	
+	/**
+	 * Este método crea el panel secundario inferior y lo agrega al contenedor principal.
+	 */
+	private void agregarPanelSecundarioInf() {
+		
+		panelSecundarioInf = new JPanel();
+
+		panelSecundarioInf.setPreferredSize(new Dimension(800, 20));
+		
+		panelContenedor.add(panelSecundarioInf, BorderLayout.SOUTH);
+	} // fin del método agregarPanelSecundarioInf
 	
 	/**
 	 * Este método crea el panel secundario y se inserta en el
@@ -517,10 +558,10 @@ public class Aplicacion extends JFrame{
 		panelGrafo.setBackground(Color.WHITE);
 		panelGrafo.setBorder(BorderFactory.createTitledBorder("Red de transporte"));
 		panelGrafo.setName("Panel de grafo");
-		panelGrafo.setPreferredSize(new Dimension(365, 405));
+		panelGrafo.setPreferredSize(new Dimension(370, 470));
 		
 		panelDibujo = new PanelDibujo(this);
-		panelDibujo.setPreferredSize(new Dimension(360, 400));
+		panelDibujo.setPreferredSize(new Dimension(360, 440));
 		
 		panelGrafo.add(panelDibujo);
 	} // fin del método crearPanelGrafo
@@ -533,9 +574,10 @@ public class Aplicacion extends JFrame{
 		panelAvenida = new JPanel();
 		panelAvenida.setBorder(BorderFactory.createTitledBorder("Avenida"));
         panelAvenida.setName("Panel de avenida");
+        panelAvenida.setPreferredSize(new Dimension(320, 150));
 		
 		// Layout
-		GroupLayout panelAvenidaLayout = new GroupLayout(panelAvenida);
+		BorderLayout panelAvenidaLayout = new BorderLayout();
         
         // Campo tráfico máximo
 		labelTrafico = new JLabel();
@@ -544,16 +586,18 @@ public class Aplicacion extends JFrame{
         fieldTrafico = new JTextField();
         fieldTrafico.setText("");
         fieldTrafico.setName("field trafico");
+        fieldTrafico.setPreferredSize(new Dimension(150, 20));
         fieldTrafico.setBackground(Color.WHITE);
         fieldTrafico.setEditable(false);
-
+        
         // Campo distancia
         labelDistancia = new JLabel();
-        labelDistancia.setText("Distancia: ");
+        labelDistancia.setText("            Distancia: ");
         labelDistancia.setName("label distancia");
         fieldDistancia = new JTextField();
         fieldDistancia.setText("");
         fieldDistancia.setName("field distancia");
+        fieldDistancia.setPreferredSize(new Dimension(150, 20));
         fieldDistancia.setBackground(Color.WHITE);
         fieldDistancia.setEditable(false);
         
@@ -562,69 +606,80 @@ public class Aplicacion extends JFrame{
         labelEstado.setText("");
         labelEstado.setName("label estado");
         boxEstado = new JComboBox();
-        boxEstado.setModel(new DefaultComboBoxModel(new String[] { "Habilitada", "Deshabilitada" }));
+        boxEstado.setModel(new DefaultComboBoxModel(new String[] { "Habilitada", "En Reparación" }));
         boxEstado.setName("box estado");
         boxEstado.setBackground(Color.WHITE);
         boxEstado.setEnabled(false);
-        boxEstado.addActionListener(new ActionListener(){
+        
+        // Boton editar avenida
+        botonEditarAv = new JButton("Editar");
+        botonEditarAv.setEnabled(false);
+        botonEditarAv.setName("editarAv");
+        botonEditarAv.addActionListener(new ActionListener(){
 
 			public void actionPerformed(ActionEvent evento) {
 				
-				int opcion = boxEstado.getSelectedIndex();
-				Avenida a = red.getAvenidaIndice(indiceAvenida);
-				
-				if(opcion == 0) {
-					
-					// verifica si el estado de la avenida debe cambiar
-					if(!a.estaHabilitada()) {
-						// la avenida estaba deshabilitada. Debe habilitarse
-						red.getAvenidaIndice(indiceAvenida).setEstado(true);
-						panelDibujo.repaint();
-					}
-				}
-				else {
-					// verifica si el estado de la avenida debe cambiar
-					if(a.estaHabilitada()) {
-						// la avenida estaba habilitada. Debe deshabilitarse
-						red.getAvenidaIndice(indiceAvenida).setEstado(false);
-						panelDibujo.repaint();
-					}
-				}
+				editarAvenidaSeleccionada();
 			}
 		});
-  
-        panelAvenida.setLayout(panelAvenidaLayout);
+        botonEditarAv.addKeyListener(new KeyListener());
         
-        panelAvenidaLayout.setHorizontalGroup(
-        	panelAvenidaLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-            .addGroup(panelAvenidaLayout.createSequentialGroup()
-                .addGroup(panelAvenidaLayout.createParallelGroup(GroupLayout.Alignment.TRAILING)
-                    .addComponent(labelEstado)
-                    .addComponent(labelTrafico)
-                    .addComponent(labelDistancia))
-                .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(panelAvenidaLayout.createParallelGroup(GroupLayout.Alignment.LEADING, false)
-                    .addComponent(boxEstado, 0, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(fieldDistancia)
-                    .addComponent(fieldTrafico, GroupLayout.DEFAULT_SIZE, 176, Short.MAX_VALUE))
-                .addContainerGap(31, Short.MAX_VALUE))
-        );
-        panelAvenidaLayout.setVerticalGroup(
-        		panelAvenidaLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-            .addGroup(panelAvenidaLayout.createSequentialGroup()
-                .addGroup(panelAvenidaLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                    .addComponent(labelTrafico)
-                    .addComponent(fieldTrafico, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(panelAvenidaLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                    .addComponent(fieldDistancia, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                    .addComponent(labelDistancia))
-                .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(panelAvenidaLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                    .addComponent(boxEstado, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                    .addComponent(labelEstado))
-                .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
+        panelAvenida.setLayout(panelAvenidaLayout);
+    
+        // Panel central
+        JPanel panelCentral = new JPanel();
+        panelCentral.setLayout(new BorderLayout());
+        panelCentral.setPreferredSize(new Dimension(300, 120));
+        
+        // Panel que contiene el campo tráfico
+        JPanel panelTrafico = new JPanel();
+        panelTrafico.setPreferredSize(new Dimension(300, 25));
+        panelTrafico.add(labelTrafico);
+        panelTrafico.add(fieldTrafico);
+        
+        // Panel que contiene el campo distancia
+        JPanel panelDistancia = new JPanel();
+        panelDistancia.setPreferredSize(new Dimension(300, 25));
+        panelDistancia.add(labelDistancia);
+        panelDistancia.add(fieldDistancia);
+        
+        // Panel que contiene el comboBox
+        JPanel panelEstado = new JPanel();
+        panelEstado.setPreferredSize(new Dimension(300, 36));
+        panelEstado.setLayout(new BorderLayout());
+        JPanel panelAux = new JPanel();
+        panelAux.setPreferredSize(new Dimension(130, 10));
+        panelEstado.add(panelAux, BorderLayout.WEST);
+        panelAux = new JPanel();
+        panelAux.setPreferredSize(new Dimension(30, 10));
+        panelEstado.add(panelAux, BorderLayout.EAST);
+        panelAux = new JPanel();
+        panelAux.setPreferredSize(new Dimension(300, 11));
+        panelEstado.add(panelAux, BorderLayout.SOUTH);
+        panelEstado.add(boxEstado, BorderLayout.CENTER);
+        
+        // Agrega los componentes en el panel central
+        panelCentral.add(panelTrafico, BorderLayout.NORTH);
+        panelCentral.add(panelDistancia, BorderLayout.CENTER);
+        panelCentral.add(panelEstado, BorderLayout.SOUTH);
+        panelAvenida.add(panelCentral, BorderLayout.CENTER);
+        
+        // Panel que contiene el botón Editar
+        JPanel panelInf = new JPanel();
+        panelInf.setLayout(new BorderLayout());
+        panelInf.setPreferredSize(new Dimension(300, 34));
+        panelAux = new JPanel();
+        panelAux.setPreferredSize(new Dimension(180, 28));
+        panelInf.add(panelAux, BorderLayout.WEST);
+        panelAux = new JPanel();
+        panelAux.setPreferredSize(new Dimension(30, 28));
+        panelInf.add(panelAux, BorderLayout.EAST);
+        panelAux = new JPanel();
+        panelAux.setPreferredSize(new Dimension(300, 5));
+        panelInf.add(panelAux, BorderLayout.SOUTH);
+        panelInf.add(botonEditarAv, BorderLayout.CENTER);
+        panelAvenida.add(panelInf, BorderLayout.SOUTH);
+        
 	} // fin del método crearPanelAvenida
 	
 	/**
@@ -635,9 +690,10 @@ public class Aplicacion extends JFrame{
 		panelPunto = new JPanel();
 		panelPunto.setBorder(BorderFactory.createTitledBorder("Punto"));
         panelPunto.setName("Panel de punto");
+        panelPunto.setPreferredSize(new Dimension(320, 120));
 		
 		// Layout
-		GroupLayout panelPuntoLayout = new GroupLayout(panelPunto);
+        BorderLayout panelPuntoLayout = new BorderLayout();
 		
 		// Campo nombre
 		labelNombre = new JLabel();
@@ -647,45 +703,72 @@ public class Aplicacion extends JFrame{
 		fieldNombre.setText("");
 		fieldNombre.setName("field nombre");
 		fieldNombre.setBackground(Color.WHITE);
+        fieldNombre.setPreferredSize(new Dimension(150, 20));
 		fieldNombre.setEditable(false);
-
+		
 		// Campo costo
 		labelCosto = new JLabel();
-        labelCosto.setText("Costo: ");
+        labelCosto.setText("    Costo: ");
         labelCosto.setName("label costo");
         fieldCosto = new JTextField();
         fieldCosto.setText("");
         fieldCosto.setName("field costo");
         fieldCosto.setBackground(Color.WHITE);
+        fieldCosto.setPreferredSize(new Dimension(150, 20));
         fieldCosto.setEditable(false);
 
+        // Boton editar punto
+        botonEditarPunto = new JButton("Editar");
+        botonEditarPunto.setName("editarPunto");
+        botonEditarPunto.setEnabled(false);
+        botonEditarPunto.addActionListener(new ActionListener(){
+
+			public void actionPerformed(ActionEvent evento) {
+				
+				editarPuntoSeleccionado();
+			}
+		});
+        botonEditarPunto.addKeyListener(new KeyListener());
+        
         panelPunto.setLayout(panelPuntoLayout);
-        panelPuntoLayout.setHorizontalGroup(
-        	panelPuntoLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-            .addGroup(panelPuntoLayout.createSequentialGroup()
-                .addGap(32, 32, 32)
-                .addGroup(panelPuntoLayout.createParallelGroup(GroupLayout.Alignment.TRAILING)
-                    .addComponent(labelCosto)
-                    .addComponent(labelNombre))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(panelPuntoLayout.createParallelGroup(GroupLayout.Alignment.LEADING, false)
-                    .addComponent(fieldCosto)
-                    .addComponent(fieldNombre, GroupLayout.DEFAULT_SIZE, 180, Short.MAX_VALUE))
-                .addContainerGap(30, Short.MAX_VALUE))
-        );
-        panelPuntoLayout.setVerticalGroup(
-        	panelPuntoLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-            .addGroup(panelPuntoLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(panelPuntoLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                    .addComponent(fieldNombre, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                    .addComponent(labelNombre))
-                .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(panelPuntoLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                    .addComponent(labelCosto)
-                    .addComponent(fieldCosto, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
+    
+        // Panel central
+        JPanel panelCentral = new JPanel();
+        panelCentral.setLayout(new BorderLayout());
+        panelCentral.setPreferredSize(new Dimension(300, 90));
+        
+        // Panel que contiene el campo tráfico
+        JPanel panelNombre = new JPanel();
+        panelNombre.setPreferredSize(new Dimension(300, 25));
+        panelNombre.add(labelNombre);
+        panelNombre.add(fieldNombre);
+        panelCentral.add(panelNombre, BorderLayout.NORTH);
+        
+        // Panel que contiene el campo distancia
+        JPanel panelCosto = new JPanel();
+        panelCosto.setPreferredSize(new Dimension(300, 25));
+        panelCosto.add(labelCosto);
+        panelCosto.add(fieldCosto);
+        panelCentral.add(panelCosto, BorderLayout.CENTER);
+        
+        panelPunto.add(panelCentral, BorderLayout.CENTER);
+        
+        // Panel que contiene el botón Editar
+        JPanel panelInf = new JPanel();
+        panelInf.setLayout(new BorderLayout());
+        panelInf.setPreferredSize(new Dimension(300, 34));
+        JPanel panelAux = new JPanel();
+        panelAux.setPreferredSize(new Dimension(180, 28));
+        panelInf.add(panelAux, BorderLayout.WEST);
+        panelAux = new JPanel();
+        panelAux.setPreferredSize(new Dimension(30, 28));
+        panelInf.add(panelAux, BorderLayout.EAST);
+        panelAux = new JPanel();
+        panelAux.setPreferredSize(new Dimension(300, 5));
+        panelInf.add(panelAux, BorderLayout.SOUTH);
+        panelInf.add(botonEditarPunto, BorderLayout.CENTER);
+        panelPunto.add(panelInf, BorderLayout.SOUTH);
+        
 	} // fin del método crearPanelPunto
 	
 	/**
@@ -696,10 +779,11 @@ public class Aplicacion extends JFrame{
 		panelResultado = new JPanel();
 		panelResultado.setBorder(BorderFactory.createTitledBorder("Resultado"));
 		panelResultado.setName("Panel de resultado");
+		panelResultado.setBackground(Color.WHITE);
+		panelResultado.setPreferredSize(new Dimension(320, 150));
 		
 		areaResultado = new JTextArea();
-		areaResultado.setColumns(20);
-		areaResultado.setRows(5);
+		areaResultado.setPreferredSize(new Dimension(310, 120));
 		areaResultado.setName("area de texto resultado");
 		areaResultado.setEditable(false);
 		areaResultado.setBackground(Color.WHITE);
@@ -737,7 +821,43 @@ public class Aplicacion extends JFrame{
 		ventanaNuevaAvenida.setSize(280, 300);
 		ventanaNuevaAvenida.setLocationRelativeTo(null);
         ventanaNuevaAvenida.setVisible(true);
+        
 	} // fin del método mostrarIngresarAvenida
+	
+	/**
+	 * Este método crea un elemento JDialog con información
+	 * sobre la aplicación.
+	 */
+	private void mostrarAcercaDe() {
+		
+		VentanaAcercaDe ventanaAcercaDe;
+		
+		// JDialog
+		ventanaAcercaDe = new VentanaAcercaDe(this);
+		ventanaAcercaDe.setTitle("Acerca de");
+		ventanaAcercaDe.setSize(400, 300);
+		ventanaAcercaDe.setLocationRelativeTo(null);
+		ventanaAcercaDe.setVisible(true);
+		
+	} // fin del método mostrarAcercaDe
+	
+	
+	/**
+	 * Este método crea un elemento JDialog con
+	 * información de ayuda.
+	 */
+	private void mostrarManualAyuda() {
+		
+		VentanaAyuda ventanaAyuda;
+		
+		// JDialog
+		ventanaAyuda = new VentanaAyuda(this);
+		ventanaAyuda.setTitle("Manual de ayuda");
+		ventanaAyuda.setSize(680, 500);
+		ventanaAyuda.setLocationRelativeTo(null);
+		ventanaAyuda.setVisible(true);
+
+	} // fin del método mostrarManualAyuda
 	
 	/**
 	 * @param x
@@ -782,12 +902,178 @@ public class Aplicacion extends JFrame{
 		panelDibujo.repaint();
 	} // fin del método agregarAvenidaEntrePuntos
 	
+	
+	/**
+	 * @param x
+	 * @param y
+	 * 
+	 * Elimina el nodo que contiene las coordenadas (x, y).
+	 * Actualiza el panel de dibujo y el panel de punto.
+	 */
+	public void eliminarPunto(double x, double y) {
+		
+		Punto p = red.getPuntoCoordenadas(x, y);
+		
+		if(!p.equals(red.getAcceso()) && !p.equals(red.getSalida())) {
+			
+			if(red.existeAvenidaContiene(p)) {
+				
+				int n = JOptionPane.showConfirmDialog(
+					    this,
+					    "Una o mas avenidas se eliminarán. Desea eliminar el punto de todos modos?",
+					    "An Inane Question",
+					    JOptionPane.YES_NO_OPTION);
+					
+					if(n==0) {
+						
+						red.eliminarPunto(p);
+						panelDibujo.repaint();
+						
+						indicePunto = -1;
+						fieldCosto.setText("");
+						fieldCosto.setEditable(false);
+						botonEditarPunto.setEnabled(false);
+						
+						// Puede que se elimine la avenida cuyos datos se muestran
+						indiceAvenida = -1;
+						fieldDistancia.setText("");
+						fieldDistancia.setEditable(false);
+						fieldTrafico.setText("");
+						fieldTrafico.setEditable(false);
+						botonEditarAv.setEnabled(false);
+					}
+			}
+			
+		}
+		else {
+			mostrarMensajeInfo("Los puntos de acceso y salida no puden ser eliminados.");
+		}
+	} // fin del método eliminarPunto
+	
+	/**
+	 * @param x
+	 * @param y
+	 * 
+	 * Elimina la avenida que contiene el punto de coordenadas (x,y).
+	 * Actualiza el panel de dibujo y el panel de avenida con los datos
+	 * en blanco.
+	 */
+	public void eliminarAvenida(double x, double y) {
+		
+		Avenida a = red.getAvenidaCoordenadas(x, y);
+		
+		red.eliminarAvenida(a);
+		panelDibujo.repaint();
+		
+		indiceAvenida = -1;
+		fieldDistancia.setText("");
+		fieldDistancia.setEditable(false);
+		fieldTrafico.setText("");
+		fieldTrafico.setEditable(false);
+		botonEditarAv.setEnabled(false);
+		
+	} // fin del método eliminarAvenida
+	
+	/**
+	 * Se activa al hacerse click o presionar Enter con el
+	 * foco en el botón editar del panel visor de avenida. 
+	 * Almacena los valores registrados, realizando previamente una verificación.
+	 */
+	public void editarAvenidaSeleccionada() {
+			
+		Avenida a = red.getAvenidaIndice(indiceAvenida);
+		
+		// Verifica los valores de distancia y tráfico
+		try {
+			
+			double d = Double.parseDouble(fieldDistancia.getText());
+			
+			if(d>0) {
+				
+				try {
+					
+					long t = Long.parseLong(fieldTrafico.getText());
+					
+					if(t>0) {
+						
+						a.setDistancia(d);
+						a.setTraficoMax(t);
+					}
+				}
+				catch(Exception e) {
+					
+					mostrarMensajeInfo("El valor ingresado como tráfico no es válido.");
+				}
+			}
+			else {
+				mostrarMensajeInfo("La distancia debe ser positiva!");
+			}
+		}
+		catch(Exception e) {
+			
+			mostrarMensajeInfo("El valor ingresado como distancia no es válido.");
+		}
+		
+		int opcion = boxEstado.getSelectedIndex();
+		
+		// Verifica el valor del comboBox
+		if(opcion == 0) {
+				
+			// verifica si el estado de la avenida debe cambiar
+			if(!a.estaHabilitada()) {
+				// la avenida estaba deshabilitada. Debe habilitarse
+				red.getAvenidaIndice(indiceAvenida).setEstado(true);
+				panelDibujo.repaint();
+			}
+		}
+		else {
+			// verifica si el estado de la avenida debe cambiar
+			if(a.estaHabilitada()) {
+				// la avenida estaba habilitada. Debe deshabilitarse
+				red.getAvenidaIndice(indiceAvenida).setEstado(false);
+				panelDibujo.repaint();
+			}
+		}
+	} // fin del método editarAvenidaSeleccionada
+	
+	/**
+	 * Se activa al hacerse click o presionar Enter con el foco sobre el
+	 * botón editar del panel de punto. Verifica los valores ingresados
+	 * y, en caso de que sean válidos, actualiza el atributo.
+	 */
+	public void editarPuntoSeleccionado() {
+		
+		Punto p = red.getPuntoIndice(indicePunto);
+		
+		
+		// Verifica los valores ingresados
+		try {
+				
+			double c = Double.parseDouble(fieldCosto.getText());
+				
+			if(c>=0) {
+					
+				((PuntoInterno)p).setCosto(c);
+			}
+			else {
+				
+				mostrarMensajeInfo("El costo no puede ser negativo!");
+			}
+		}
+		catch(Exception e){
+			
+			mostrarMensajeInfo("El valor ingresado para el costo no es válido.");
+		}	
+	} // fin del método editarPuntoSeleccionado
+	
 	/**
 	 * @param x
 	 * @param y
 	 * 
 	 * Determina si existe un punto o una avenida con las coordenadas
-	 * que se pasan como parámetro y la muestra en pantalla.
+	 * que se pasan como parámetro y la muestra en pantalla. Si es el primer
+	 * punto o la primer avenida seleccionada desde que se cargó la red,
+	 * se habilitan los campos de edición.
 	 */
 	public void mostrarGraficoCoordenadas(double x, double y) {
 		
@@ -795,7 +1081,31 @@ public class Aplicacion extends JFrame{
 		
 		if(p != null) {
 			
-			indicePunto = red.getIndicePunto(p);
+			if(!p.getNombre().equals("Acceso") && !p.getNombre().equals("Salida")) {
+				
+				if(indicePunto == -1) {	// es el primer nodo seleccionado
+					
+					// habilita los campos de edición
+					fieldCosto.setEditable(true);
+					botonEditarPunto.setEnabled(true);
+				}
+				
+				indicePunto = red.getIndicePunto(p);
+			}
+			else {
+				
+				if(indicePunto != -1) {	// si se seleccionó un nodo Acceso o red
+										// y antes se seleccionó un nodo interno
+					
+					// habilita los campos de edición
+					fieldCosto.setEditable(false);
+					botonEditarPunto.setEnabled(false);
+					
+					indicePunto = -1;
+				}
+				
+			}
+			
 			
 			// Mostrar punto en panelPunto
 			fieldNombre.setText(p.getNombre());
@@ -814,6 +1124,14 @@ public class Aplicacion extends JFrame{
 			Avenida a = red.getAvenidaCoordenadas(x, y);
 			
 			if(a != null) {
+				
+				if(indiceAvenida == -1) {	// es el primer nodo seleccionado
+					
+					// habilita los campos de edición
+					fieldDistancia.setEditable(true);
+					fieldTrafico.setEditable(true);
+					botonEditarAv.setEnabled(true);
+				}
 				
 				// Almacena el indice la avenida seleccionada
 				indiceAvenida = red.getIndiceAvenida(a);
@@ -886,11 +1204,41 @@ public class Aplicacion extends JFrame{
 		
 		Punto p = red.getPuntoCoordenadas(x, y);
 		
-		if(p==null) {
-			return false;
-		}
-		return true;
+		return !(p==null);
 	} // fin del método existePuntoCoordenadas
+	
+	public boolean existeAvenidaCoordenadas(double x, double y) {
+		
+		Avenida a = red.getAvenidaCoordenadas(x, y);
+		
+		return !(a==null);
+	} // fin del método existeAvenidaCoordenadas
+	
+	/**
+	 * @param origen
+	 * @param destino
+	 * @return boolean
+	 * 
+	 * Devuelve true si la avenida que pasa por los puntos origen y destino
+	 * atraviesa algún punto distinto de estos. Devuelve false en caso contrario.
+	 */
+	public boolean avenidaAtraviesaPuntos(String origen, String destino) {
+		
+		return red.avenidaAtraviesaPuntos(origen, destino);
+	} // fin del método avenidaAtraviesaPuntos
+	
+	/**
+	 * @param x
+	 * @param y
+	 * @return boolean
+	 * 
+	 * Devuelve true si existe una avenida que pase por el punto de
+	 * coordenadas (x,y).
+	 */
+	public boolean avenidaPasaPorPunto(double x, double y) {
+		
+		return red.avenidaPasaPorPunto(x, y);
+	} // fin del método avenidaPasaPorPunto
 	
 	/**
 	 * Muestra un diálogo para abrir una configuración.
@@ -900,7 +1248,7 @@ public class Aplicacion extends JFrame{
 		VentanaAbrir v = new VentanaAbrir(this);
 		
 		v.mostrar();
-	}
+	} // fin del método mostrarRecuperarConf 
 	
 	/**
 	 * @param nombreDir
@@ -914,12 +1262,26 @@ public class Aplicacion extends JFrame{
 		// Establece el directorio padre del archivo
 		DataAccessObject.setDirectorio(nombreDir);
 		
-		// Recupera la instancia de red del archivo
-		red = (Red) DataAccessObject.cargar(nombreArchivo);
+		try {
+			// Recupera la instancia de red del archivo
+			red = (Red)DataAccessObject.cargar(nombreArchivo);
+		}
+		catch(IOException ex){
+			
+			mostrarMensajeError("El archivo seleccionado no puede ser abierto.");
+		}
+		catch(ClassNotFoundException ex){
+
+			mostrarMensajeError("El archivo seleccionado no puede ser abierto.");
+		}
+		catch(Exception e) {
+			
+			mostrarMensajeError("Ha ocurrido un error en la aplicación, por favor inténtelo nuevamente.");
+		}
 		
 		// Actualiza el panel de dibujo
 		panelDibujo.repaint();
-	}
+	} // fin del método cargarObjetoArchivo
 	
 	/**
 	 * Muestra un diálogo para guardar una configuración.
@@ -931,13 +1293,195 @@ public class Aplicacion extends JFrame{
 		v.mostrar();
 	} // fin del método mostrarGuardarConf
 	
+	/**
+	 * @param nombreDir
+	 * @param nombreArchivo
+	 * 
+	 * Este método invoca al DAO para guardar los objetos serializables
+	 * instanciados en la aplicación.
+	 */
 	public void guardarObjetoArchivo(String nombreDir, String nombreArchivo) {
 		
 		// Establece el directorio padre del archivo
 		DataAccessObject.setDirectorio(nombreDir);
 		
-		DataAccessObject.persistir(red, nombreArchivo);
-	}
+		try {
+			// Guarda la configuracion actual de la red en un archivo.
+			DataAccessObject.persistir(red, nombreArchivo);
+		}
+		catch(IOException ex){
+
+			mostrarMensajeError("La configuración de la red no pudo ser guardada..");
+		}
+		catch(Exception e) {
+			
+			mostrarMensajeError("Ha ocurrido un error en la aplicación, por favor inténtelo nuevamente.");
+		}
+	} // fin del método guardarObjetoArchivo
+	
+	
+	/**
+	 * @param x
+	 * @param y
+	 * 
+	 * Obtiene el camino más corto entre el par de puntos dados.
+	 */
+	public void obtenerCaminoMasCorto(double xOrigen, double yOrigen, double xDestino, double yDestino) {
+		
+		Punto origen = red.getPuntoCoordenadas(xOrigen, yOrigen);
+		Punto destino = red.getPuntoCoordenadas(xDestino, yDestino);
+		
+		Punto[] camino = red.obtenerCaminoMasCorto(origen, destino);
+		
+		if(camino != null ) {	// existe al menos un camino
+			
+			// Muestra el resultado en el panel
+			areaResultado.setText("El camino más corto es la secuencia:");
+			
+			int i = 0;
+			
+			while(i<camino.length) {
+				
+				// Escribe el nodo
+				areaResultado.append("-" + camino[i].getNombre() + "\n");
+				i++;
+			}
+		}
+		else {
+			
+			// Muestra el resultado en el panel
+			areaResultado.setText("Los nodos no son alcanzables.");
+		}
+		
+	} // fin del método obtenerCaminoMasCorto
+	
+	/**
+	 * @param xOrigen
+	 * @param yOrigen
+	 * @param xDestino
+	 * @param yDestino
+	 * 
+	 * Obtiene el camino con menos peajes del nodo origen al destino.
+	 */
+	public void obtenerCaminoMenosPeajes(double xOrigen, double yOrigen, double xDestino, double yDestino) {
+		
+		Punto origen = red.getPuntoCoordenadas(xOrigen, yOrigen);
+		Punto destino = red.getPuntoCoordenadas(xDestino, yDestino);
+		
+		Punto[] camino = red.obtenerCaminoMenosPeajes(origen, destino);
+		
+		if(camino != null ) {	// existe al menos un camino
+			
+			// Muestra el resultado en el panel
+			areaResultado.setText("El camino con menos peajes es la secuencia:");
+			
+			int i = 0;
+			
+			while(i<camino.length) {
+				
+				// Escribe el nodo
+				areaResultado.append("-" + camino[i].getNombre() + "\n");
+				i++;
+			}
+		}
+		else {
+			
+			// Muestra el resultado en el panel
+			areaResultado.setText("Los nodos no son alcanzables.");
+		}
+		
+	} // fin del método obtenerCaminoMenosPeajes
+	
+	/**
+	 * @param x
+	 * @param y
+	 * 
+	 * Obtiene los puntos alcanzables desde un punto dado.
+	 */
+	public void obtenerPuntosAlcanzables(double x, double y) {
+		
+		Punto p = red.getPuntoCoordenadas(x, y);
+		
+		Punto[] puntos = red.obtenerPuntosAlcanzables(p);
+		
+		if(puntos.length != 0) {	// existe al menos un nodo
+			
+			// Muestra el resultado en el panel
+			areaResultado.setText("Los puntos alcanzables desde el nodo " + p.getNombre()+ " son:");
+			
+			int i = 0;
+			
+			while(i<puntos.length) {
+				
+				// Escribe el nodo
+				areaResultado.append("-" + puntos[i].getNombre() + "\n");
+				i++;
+			}
+		}
+		else {
+			
+			// Muestra el resultado en el panel
+			areaResultado.setText("El nodo está aislado.");
+		}
+		
+	} // fin del método obtenerPuntosAlcanzables
+	
+	/**
+	 * @param x
+	 * @param y
+	 * 
+	 * Obtiene los puntos alcanzables desde el punto dado,
+	 * tras pasar por menos de n peajes.
+	 */
+	public void obtenerPuntosMenosNPeajes(double x, double y) {
+		
+		String n = JOptionPane.showInputDialog("Por favor, ingrese el número de peajes:");
+		
+		try {
+			
+			int numPeajes = Integer.parseInt(n);
+			
+			if(numPeajes>0) {
+				
+				Punto p = red.getPuntoCoordenadas(x, y);
+				
+				Punto[] puntos = red.obtenerPuntosMenosNPeajes(p, numPeajes);
+				
+				Avenida[] avenidas = red.obtenerSecuenciaAvenidas(puntos);
+				
+				JDialog ver = new JDialog();
+				ver.setSize(420, 460);
+				ver.setTitle("Resultado: Nodos alcanzables con menos de " + n + " peajes");
+				ver.setResizable(false);
+				ver.setLocationRelativeTo(null);
+				
+				VentanaDibujo resultado = new VentanaDibujo(red.getAvenidas(), red.getPuntosInternos());
+				resultado.setPreferredSize(new Dimension(420, 460));
+				resultado.repaint();
+				resultado.setVisible(true);
+				
+				ver.add(resultado);
+				ver.setVisible(true);
+			}
+		}
+		catch(Exception e) {
+			
+			mostrarMensajeInfo("El número de peajes ingresados no es válido. La operación fue cancelada.");
+		}
+		
+	}	// fin del método obtenerPuntosMenosNPeajes
+	
+	/**
+	 * Obtiene el máximo tráfico posible en la red.
+	 */
+	public void obtenerMaximoTraficoEnRed() {
+		
+		long maxTraf = red.obtenerMaximoTraficoEnRed();
+		
+		// Muestra el resultado en el panel
+		areaResultado.setText("El máximo tráfico en la red es de: " + maxTraf);
+		
+	} // fin del método obtenerMaximoTraficoEnRed
 	
 	/**
 	 * @param mensaje
@@ -994,7 +1538,7 @@ public class Aplicacion extends JFrame{
 		else {
 			
 			// Se instancia la clase Red
-			red = new Red(180, 1, 180, 340);
+			red = new Red(180, 20, 180, 390);
 			
 			// Se inicializan los indices de avenida y punto seleccionados
 			indiceAvenida = -1;
@@ -1002,14 +1546,50 @@ public class Aplicacion extends JFrame{
 			
 			fieldNombre.setText("");
 			fieldCosto.setText("");
+			fieldCosto.setEditable(false);
 			
 			fieldTrafico.setText("");
+			fieldTrafico.setEditable(false);
 	        fieldDistancia.setText("");
+	        fieldDistancia.setEditable(false);
 	        boxEstado.setSelectedIndex(0);
 	        boxEstado.setEnabled(false);
 		}
 		
 		panelDibujo.repaint();
 	} // fin del método mostrarPreguntaGuardar
+	
+	/**
+	 * @author Goti
+	 * 
+	 * Esta clase se utiliza de manera auxiliar para implementar
+	 * un key listener para los diferentes botones.
+	 */
+	private class KeyListener extends KeyAdapter {
+		
+        public void keyPressed(KeyEvent e) {
+        	
+            String targ = "ENTER";
+            
+            String key = e.getKeyText(e.getKeyCode());
+            key = key.toUpperCase();
+            
+            // el componente que despertó el evento
+            String comp = e.getComponent().getName();
+            
+            // maneja la pulsación de la tecla ENTER
+            if (key.equals("INTRODUZCA")) {
+            	
+            	if(comp.equals("editarAv")) {
+            		
+            		editarAvenidaSeleccionada();
+            	}
+            	else {
+            		
+            		editarPuntoSeleccionado();
+            	}
+            }
+        }
+    } // fin de clase KeyListener
 	
 } // fin de definición de clase Aplicacion
