@@ -43,7 +43,7 @@ public abstract class DataAccessObject {
 	} // fin de método persistir
 	
 	/**
-	 * @param fileName
+	 * @param nombreArchivo
 	 * @return Object
 	 * 
 	 * Lee un archivo de nombre nombreArchivo, recupera el objeto

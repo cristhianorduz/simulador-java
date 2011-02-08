@@ -427,6 +427,9 @@ public class PanelDibujo extends JPanel {
 		        if(app.existePuntoCoordenadas(x,y)) {
 		        	
 		        	app.obtenerPuntosAlcanzables(x, y);
+		        	
+		        	// Reestablece el mouse listener
+			        setMouseListener(1);
 		        }
 		        else {
 		        	

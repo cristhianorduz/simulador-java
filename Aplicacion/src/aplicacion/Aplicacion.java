@@ -943,6 +943,11 @@ public class Aplicacion extends JFrame{
 						botonEditarAv.setEnabled(false);
 					}
 			}
+			else {
+				
+				red.eliminarPunto(p);
+				panelDibujo.repaint();
+			}
 			
 		}
 		else {
@@ -1321,8 +1326,10 @@ public class Aplicacion extends JFrame{
 	
 	
 	/**
-	 * @param x
-	 * @param y
+	 * @param xOrigen
+	 * @param yOrigen
+	 * @param xDestino
+	 * @param yDestino
 	 * 
 	 * Obtiene el camino más corto entre el par de puntos dados.
 	 */
@@ -1333,17 +1340,19 @@ public class Aplicacion extends JFrame{
 		
 		Punto[] camino = red.obtenerCaminoMasCorto(origen, destino);
 		
+		camino = invertirArreglo(camino);
+		
 		if(camino != null ) {	// existe al menos un camino
 			
 			// Muestra el resultado en el panel
-			areaResultado.setText("El camino más corto es la secuencia:");
+			areaResultado.setText("El camino más corto es la secuencia:\n");
 			
 			int i = 0;
 			
 			while(i<camino.length) {
 				
 				// Escribe el nodo
-				areaResultado.append("-" + camino[i].getNombre() + "\n");
+				areaResultado.append("- " + camino[i].getNombre() + "\n");
 				i++;
 			}
 		}
@@ -1370,17 +1379,19 @@ public class Aplicacion extends JFrame{
 		
 		Punto[] camino = red.obtenerCaminoMenosPeajes(origen, destino);
 		
+		camino = invertirArreglo(camino);
+		
 		if(camino != null ) {	// existe al menos un camino
 			
 			// Muestra el resultado en el panel
-			areaResultado.setText("El camino con menos peajes es la secuencia:");
+			areaResultado.setText("El camino con menos peajes es la secuencia:\n");
 			
 			int i = 0;
 			
 			while(i<camino.length) {
 				
 				// Escribe el nodo
-				areaResultado.append("-" + camino[i].getNombre() + "\n");
+				areaResultado.append("- " + camino[i].getNombre() + "\n");
 				i++;
 			}
 		}
@@ -1407,14 +1418,14 @@ public class Aplicacion extends JFrame{
 		if(puntos.length != 0) {	// existe al menos un nodo
 			
 			// Muestra el resultado en el panel
-			areaResultado.setText("Los puntos alcanzables desde el nodo " + p.getNombre()+ " son:");
+			areaResultado.setText("Los puntos alcanzables desde el nodo " + p.getNombre()+ " son:\n");
 			
 			int i = 0;
 			
 			while(i<puntos.length) {
 				
 				// Escribe el nodo
-				areaResultado.append("-" + puntos[i].getNombre() + "\n");
+				areaResultado.append("- " + puntos[i].getNombre() + "\n");
 				i++;
 			}
 		}
@@ -1437,37 +1448,40 @@ public class Aplicacion extends JFrame{
 		
 		String n = JOptionPane.showInputDialog("Por favor, ingrese el número de peajes:");
 		
+		int numPeajes=0;
+		
 		try {
 			
-			int numPeajes = Integer.parseInt(n);
-			
-			if(numPeajes>0) {
-				
-				Punto p = red.getPuntoCoordenadas(x, y);
-				
-				Punto[] puntos = red.obtenerPuntosMenosNPeajes(p, numPeajes);
-				
-				Avenida[] avenidas = red.obtenerSecuenciaAvenidas(puntos);
-				
-				JDialog ver = new JDialog();
-				ver.setSize(420, 460);
-				ver.setTitle("Resultado: Nodos alcanzables con menos de " + n + " peajes");
-				ver.setResizable(false);
-				ver.setLocationRelativeTo(null);
-				
-				VentanaDibujo resultado = new VentanaDibujo(red.getAvenidas(), red.getPuntosInternos());
-				resultado.setPreferredSize(new Dimension(420, 460));
-				resultado.repaint();
-				resultado.setVisible(true);
-				
-				ver.add(resultado);
-				ver.setVisible(true);
-			}
+			numPeajes = Integer.parseInt(n);
 		}
 		catch(Exception e) {
 			
 			mostrarMensajeInfo("El número de peajes ingresados no es válido. La operación fue cancelada.");
 		}
+		
+		if(numPeajes>0) {
+				
+			Punto p = red.getPuntoCoordenadas(x, y);
+				
+			Punto[] puntos = red.obtenerPuntosMenosNPeajes(p, numPeajes);
+				
+			Avenida[] avenidas = red.obtenerSecuenciaAvenidas(puntos);
+			
+			JDialog ver = new JDialog();
+			ver.setSize(420, 460);
+			ver.setTitle("Resultado: Nodos alcanzables con menos de " + n + " peajes");
+			ver.setResizable(false);
+			ver.setLocationRelativeTo(null);
+				
+			VentanaDibujo resultado = new VentanaDibujo(avenidas, puntos);
+			resultado.setPreferredSize(new Dimension(420, 460));
+			resultado.repaint();
+			resultado.setVisible(true);
+
+			ver.add(resultado);
+			ver.setVisible(true);
+		}
+		
 		
 	}	// fin del método obtenerPuntosMenosNPeajes
 	
@@ -1538,7 +1552,7 @@ public class Aplicacion extends JFrame{
 		else {
 			
 			// Se instancia la clase Red
-			red = new Red(180, 20, 180, 390);
+			red = new Red(180, 20, 180, 400);
 			
 			// Se inicializan los indices de avenida y punto seleccionados
 			indiceAvenida = -1;
@@ -1560,6 +1574,27 @@ public class Aplicacion extends JFrame{
 	} // fin del método mostrarPreguntaGuardar
 	
 	/**
+	 * @param arreglo
+	 * @return Punto[]
+	 * 
+	 * Invierte los elementos del arreglo que recibe como parámetro.
+	 */
+	private Punto[] invertirArreglo(Punto[] arreglo) {
+		
+		Punto[] temp = new Punto[arreglo.length];
+		int j=0;
+		
+		for(int i=arreglo.length-1; i>=0; i--) {
+			
+			temp[j] = arreglo[i];
+			
+			j++;
+		}
+		
+		return temp;
+	} // fin del método revertirArreglo
+	
+	/**
 	 * @author Goti
 	 * 
 	 * Esta clase se utiliza de manera auxiliar para implementar
@@ -1568,8 +1603,6 @@ public class Aplicacion extends JFrame{
 	private class KeyListener extends KeyAdapter {
 		
         public void keyPressed(KeyEvent e) {
-        	
-            String targ = "ENTER";
             
             String key = e.getKeyText(e.getKeyCode());
             key = key.toUpperCase();
