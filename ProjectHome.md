@@ -1,0 +1,1 @@
+En este proyecto se puede encontrar ejemplo de código sobre serialización de objetos, uso de la API Graphics de Java y uso de algoritmos de grafos para dar solución a consultas sobre una red de transporte.
